@@ -2,23 +2,23 @@
 
 A Claude Code plugin for turning ad-hoc explainers into a curated commonplace book.
 
-When Claude gives you a substantive explanation of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to write it. This plugin gives you a three-stage workflow: **jot** something down cheaply in the moment, **review** the backlog periodically, **bind** the survivors into finished entries in your jotbook.
+When Claude gives you a substantive explanation of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to write it. This plugin gives you a three-stage workflow: **jot** a concept down cheaply in the moment, **review** the backlog periodically, **ink** the survivors into finished entries in your jotbook.
 
 ## How it works
 
 ```
   ┌──────────┐     ┌──────────┐     ┌──────────┐
-  │   jot    │ ──▶ │  review  │ ──▶ │   bind   │
+  │   jot    │ ──▶ │  review  │ ──▶ │   ink    │
   └──────────┘     └──────────┘     └──────────┘
-   lightweight      consolidate /     bound entry
+   lightweight      consolidate /     inked entry
    pointer file     drop / tweak      in the jotbook
 ```
 
 - **Jot** is cheap: a one-line pointer file with today's date and (optionally) the files the explainer referenced. Use it freely — most won't survive.
 - **Review** is curation: list the backlog, propose merges, drop the dead weight, tweak framings, mark the survivors.
-- **Bind** is the actual writeup: read the referenced files, reconstruct the explanation, produce a finished entry. Markdown by default; Obsidian or HTML on request.
+- **Ink** is the actual writeup: read the referenced files, reconstruct the explanation, produce a finished entry. Markdown by default; Obsidian or HTML on request.
 
-You can drive each stage by hand with `/jot`, or just run `/jotbook` for a guided session that walks review → bind in one pass.
+You can drive each stage by hand with `/jot`, or just run `/jotbook` for a guided session that walks review → ink in one pass.
 
 ## Install
 
@@ -46,7 +46,7 @@ Then, during normal use:
 |---|---|
 | Claude just gave you an explainer you'll want to revisit | `/jot` (or let the auto-stage hook nudge you) |
 | Your jot backlog has gotten chunky | `/jotbook` |
-| You want to bind one specific jot right now | `/jot bind <slug>` |
+| You want to ink one specific jot right now | `/jot ink <slug>` |
 
 ## Commands
 
@@ -54,13 +54,13 @@ The plugin uses a dual-command shape: `/jotbook` for the *artifact* (the whole c
 
 | Command | Purpose |
 |---|---|
-| `/jotbook` | **Guided curation flow.** Reviews the backlog, lets you drop/merge/tweak/bind jots, then binds anything you marked as ready. The primary entry point. |
+| `/jotbook` | **Guided curation flow.** Reviews the backlog, lets you drop/merge/tweak/ink jots, then inks anything you marked as ready. The primary entry point. |
 | `/jot [subject]` | Stage a jot. With no argument, infers from recent conversation; with an argument, uses it as the subject phrase. Also invoked by the auto-stage hook. |
-| `/jot review` | Inventory the backlog and apply structural decisions only — no bind step. |
-| `/jot bind <slug>[,<slug>]` | Bind a jot (or several) into a finished entry. Comma-separated slugs consolidate into one entry. |
+| `/jot review` | Inventory the backlog and apply structural decisions only — no ink step. |
+| `/jot ink <slug>[,<slug>]` | Ink a jot (or several) into a finished entry. Comma-separated slugs consolidate into one entry. |
 | `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). |
 
-Reserved words after `/jot` (`review`, `bind`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
+Reserved words after `/jot` (`review`, `ink`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
 
 ## Settings
 
@@ -69,13 +69,13 @@ Settings live at `.claude/jotbook.local.md` in each project. YAML frontmatter fo
 | Field | Default | Meaning |
 |---|---|---|
 | `jots_dir` | `docs/jotbook/_candidates/` | Where staged jots are written. |
-| `entries_dir` | `docs/jotbook/` | Where bound entries are written. |
+| `entries_dir` | `docs/jotbook/` | Where inked entries are written. |
 | `output_format` | `markdown` | One of `markdown`, `obsidian`, `html`. See **Output modes** below. |
 | `template_path` | (none) | Path to an HTML template, used only when `output_format: html`. |
 | `auto_stage_mode` | `prompt` | One of `off`, `prompt`, `auto`. See **Auto-stage hook** below. |
 | `backlog_threshold` | `8` | Session-start backlog nudge fires when the jot count reaches this number. |
 
-The **body** of the settings file (after the closing `---`) is treated by `jotbook-bind` as house-style guidance — voice, tone, terminology, formatting conventions. Use it for things that should shape the writeup but don't fit in a single config field.
+The **body** of the settings file (after the closing `---`) is treated by `jotbook-ink` as house-style guidance — voice, tone, terminology, formatting conventions. Use it for things that should shape the writeup but don't fit in a single config field.
 
 Example:
 
@@ -113,7 +113,7 @@ Point `entries_dir` at a folder inside your vault and entries appear there direc
 
 ### `html`
 
-Template-driven HTML for users who want a styled long-form output (zines, field manuals, internal wikis, etc.). Requires `template_path` to point at a real HTML file containing `{{PLACEHOLDER}}` tokens for the title, standfirst, sections, etc. `jotbook-bind` will refuse to invent a template — building one is a separate, deliberate design task.
+Template-driven HTML for users who want a styled long-form output (zines, field manuals, internal wikis, etc.). Requires `template_path` to point at a real HTML file containing `{{PLACEHOLDER}}` tokens for the title, standfirst, sections, etc. `jotbook-ink` will refuse to invent a template — building one is a separate, deliberate design task.
 
 If you'd like to build an HTML template for this mode, start a fresh conversation and ask Claude to help design one; then point `template_path` at it.
 
@@ -147,7 +147,7 @@ Hooks are loaded when Claude Code starts. Editing `auto_stage_mode` or `backlog_
 |---|---|
 | Disable the staging nudge entirely | `auto_stage_mode: off` |
 | Have Claude jot explainers silently | `auto_stage_mode: auto` |
-| Bind into an Obsidian vault | `output_format: obsidian` + `entries_dir: <vault-folder>` |
+| Ink into an Obsidian vault | `output_format: obsidian` + `entries_dir: <vault-folder>` |
 | Use a custom HTML template | `output_format: html` + `template_path: <path>` |
 | Change where jots live | `jots_dir: <path>` |
 | Move the backlog nudge threshold | `backlog_threshold: <n>` |

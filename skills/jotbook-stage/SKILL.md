@@ -5,7 +5,7 @@ description: Stage a recently-discussed concept as a lightweight jot. Use immedi
 
 # Stage a jot
 
-You just gave (or were asked about) an explainer the user wants to revisit later. Write a **lightweight** pointer file (a "jot") so the topic can be picked up during a future review pass. Do not write the full entry — that's `jotbook-bind`'s job.
+You just gave (or were asked about) an explainer the user wants to revisit later. Write a **lightweight** pointer file (a "jot") so the topic can be picked up during a future review pass. Do not write the full entry — that's `jotbook-ink`'s job.
 
 ## Resolve the jots directory and mode
 
@@ -44,8 +44,8 @@ The `Files:` line is **optional**. Include it only when the explainer leaned hea
 
 ## Hard limits
 
-- **One line of description.** Not two. Not a paragraph. If you feel the urge to write more, you're trying to do `jotbook-bind`'s job — stop.
-- **No background, no rationale, no code excerpts.** A jot is a *pointer*. The full explanation lives in chat history or will be reconstructed at bind time.
+- **One line of description.** Not two. Not a paragraph. If you feel the urge to write more, you're trying to do `jotbook-ink`'s job — stop.
+- **No background, no rationale, no code excerpts.** A jot is a *pointer*. The full explanation lives in chat history or will be reconstructed at ink time.
 - **No headings beyond the frontmatter.**
 
 The point of a tiny jot is that some won't survive review, and you should be able to drop one without regret.
@@ -72,7 +72,7 @@ In `prompt` mode the user has opted in to being asked, so the original procedure
 
 ## What NOT to do
 
-- Don't propose to bind the jot into a full entry immediately. That's a separate explicit step.
+- Don't propose to ink the jot into a full entry immediately. That's a separate explicit step.
 - Don't add tags, status fields, priority, or other metadata beyond `staged:`.
 - Don't ask the user to "review" the staged jot — it's already supposed to be lightweight enough that review is unnecessary.
 - Don't stage trivial Q&A ("what's the syntax for X"). If you wouldn't expect future-you to benefit from a long-form entry on it, don't stage it.

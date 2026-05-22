@@ -1,6 +1,6 @@
 ---
-description: Toolkit for individual jots — stage (default), review, bind, or init.
-argument-hint: "[subject] | review | bind <slug> | init"
+description: Toolkit for individual jots — stage (default), review, ink, or init.
+argument-hint: "[subject] | review | ink <slug> | init"
 ---
 
 # /jot
@@ -8,12 +8,12 @@ argument-hint: "[subject] | review | bind <slug> | init"
 Toolkit dispatcher for granular jotbook actions. Read `$1` and route:
 
 - **`review`** → invoke the `jotbook-review` skill. No further arguments.
-- **`bind`** → invoke the `jotbook-bind` skill. Pass the rest of the arguments as the jot slug (or comma-separated slugs).
+- **`ink`** → invoke the `jotbook-ink` skill. Pass the rest of the arguments as the jot slug (or comma-separated slugs).
 - **`init`** → run the **Init** flow below.
 - **`stage`** → invoke the `jotbook-stage` skill. Pass the rest of the arguments as the subject phrase.
 - **anything else (or empty)** → invoke the `jotbook-stage` skill. Treat `$ARGUMENTS` as the subject phrase (if empty, the skill infers from recent conversation).
 
-Reserved subcommand words: `review`, `bind`, `init`, `stage`. If the user wants to stage a jot whose subject starts with one of these words, they should use the explicit `/jot stage <subject>` form.
+Reserved subcommand words: `review`, `ink`, `init`, `stage`. If the user wants to stage a jot whose subject starts with one of these words, they should use the explicit `/jot stage <subject>` form.
 
 ## Settings
 
@@ -28,7 +28,7 @@ auto_stage_mode: prompt                # off | prompt | auto
 backlog_threshold: 8                   # session-start nudge fires at this count
 ```
 
-The body of the settings file (if present) is optional house-style guidance the `jotbook-bind` skill should respect.
+The body of the settings file (if present) is optional house-style guidance the `jotbook-ink` skill should respect.
 
 If the settings file does not exist and the user is invoking anything other than `init`, proceed with defaults and mention once — at the end of your reply — that `/jot init` will write a settings file they can edit.
 
