@@ -4,11 +4,11 @@ A Claude Code plugin to help easily create a curated knowledge base from ad-hoc 
 
 If you are a vibe coder your coding agent is almost certainly implementing algorithms and concepts you don't fully understand. If you are a *responsible* vibe coder, you are asking your agent to explain in detail what it just implemented so you can learn about it. Jotbook is for the responsible vibe coder. 
 
-When Claude gives you a substantive explainer of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to decide if it's worth saving, let alone write it. This plugin gives you a three-stage workflow: **jot** a note down cheaply in the moment to revisit this subject, **review** the backlog periodically, **ink** the survivors into finished entries in your jotbook.
+When Claude gives you a substantive explainer of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to decide if it's worth saving, let alone write it. This plugin gives you a three-stage workflow: **jot** down a quick note to revisit an explainer cheaply in the moment, **review** the backlog periodically for still-relevant explainers, **ink** the survivors into finished entries in your jotbook.
+
+---
 
 By default the plugin will just nudge Claude to ask you if you'd like to save an explainer as a candidate for potential future codification. But the the real magic happens when you auto-detect candidate entries and save them to the backlog silently for you to review later (`auto_stage_mode`). Review your backlog later and ink new entries. Inking also updates existing inked entries with new links if relevant for all you Obsidian node heads.
-
-Jotbook isn't exactly intended for creating documentation for your codebase (though you could use it that way), it's more like a scrapbook for gathering explainers on concepts or algorithms you'd like to learn more about later.  
 
 Format your jotbook as linked markdown (default), Obsidian vault, or HTML files for added pizzazz.
 
