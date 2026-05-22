@@ -1,7 +1,7 @@
 {
   "name": "jotbook",
-  "description": "Capture explainers as lightweight jots, curate them periodically, and ink approved jots into long-form entries. Use /jotbook for the guided curation flow or /jot for granular actions.",
-  "version": "0.1.0",
+  "description": "Capture explainers as lightweight jots, curate them periodically, then pencil or ink them into long-form entries. Use /jotbook for the guided curation flow or /jot for granular actions.",
+  "version": "0.2.0",
   "author": {
     "name": "Jack Koloskus"
   },

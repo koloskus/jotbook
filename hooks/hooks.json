@@ -1,5 +1,5 @@
 {
-  "description": "Auto-jot substantive explainers and surface the jot backlog when it grows.",
+  "description": "Auto-jot substantive explainers and surface the jot and pencil backlogs when they grow.",
   "hooks": {
     "Stop": [
       {

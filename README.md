@@ -57,6 +57,7 @@ Then, during normal use:
 | Claude just gave you an explainer you'll want to revisit | `/jot` (or let the auto-stage hook nudge you) |
 | Your jot backlog has gotten chunky | `/jotbook` |
 | You want to ink one specific jot right now | `/jot ink <slug>` |
+| You want to draft a long-form preview before deciding | `/jot pencil <slug>` |
 
 ## Commands
 
@@ -64,13 +65,55 @@ The plugin uses a dual-command shape: `/jotbook` for the *artifact* (the whole c
 
 | Command | Purpose |
 |---|---|
-| `/jotbook` | **Guided curation flow.** Reviews the backlog, lets you drop/merge/tweak/ink jots, then inks anything you marked as ready. The primary entry point. |
+| `/jotbook` | **Guided curation flow.** Reviews the backlog, lets you drop/merge/tweak/ink/pencil jots, then inks anything you marked as ready. The primary entry point. |
 | `/jot [subject]` | Stage a jot. With no argument, infers from recent conversation; with an argument, uses it as the subject phrase. Also invoked by the auto-stage hook. |
-| `/jot review` | Inventory the backlog and apply structural decisions only — no ink step. |
-| `/jot ink <slug>[,<slug>]` | Ink a jot (or several) into a finished entry. Comma-separated slugs consolidate into one entry. |
+| `/jot review` | Inventory the jot backlog and apply structural decisions only — no ink step. |
+| `/jot review pencils` | Inventory the pencil backlog and decide what to ink, drop, revise, edit, or keep. |
+| `/jot ink <slug>[,<slug>]` | Ink a jot (or several) into a finished entry. Comma-separated slugs consolidate into one entry. If a pencil already exists for the slug, you'll be offered to promote it instead of regenerating. |
+| `/jot pencil <slug>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. |
 | `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). |
 
-Reserved words after `/jot` (`review`, `ink`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
+Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
+
+## Pencil drafts
+
+Sometimes you can't tell if a jot is worth inking until you read the long-form version. **Pencil** is an optional intermediate step: produce the full elaboration first, then evaluate it like you would a jot.
+
+Pencils live in their own backlog (`pencils_dir`, default `docs/jotbook/_pencils/`). The source jot stays in place until the pencil resolves one way or the other.
+
+### Creating a pencil
+
+```
+/jot pencil <slug>            # from a jot in your backlog
+/jot pencil <slug-a>,<slug-b> # consolidate multiple jots into one pencil
+/jot pencil <slug> --html     # opt into the HTML template (requires template_path)
+```
+
+You can also create a pencil from inside the `/jotbook` flow: `pencil <slug>` is a valid decision alongside `ink`, `drop`, `merge`, `tweak`, and `keep`.
+
+### Reviewing pencils
+
+```
+/jot review pencils
+```
+
+Five decisions per pencil:
+
+- **Ink** — promote to a finished entry. Cross-links into existing entries fire here. Pencil + source jot(s) are deleted on success.
+- **Drop** — delete the pencil. Asks once whether to also delete the source jot(s); defaults to keeping them so you can redraft later.
+- **Revise** — regenerate with your feedback notes. Bumps the `revised:` date.
+- **Edit** — surfaces the file path; you'll hand-edit and re-run review later.
+- **Keep** — no-op for now.
+
+### Format
+
+Pencils render as Markdown by default regardless of `output_format`, since most iteration is text. Pass `--html` when you want to see an SVG diagram or interactive sketch before deciding whether the entry is worth keeping.
+
+Format conversion at ink time is **asymmetric** — going up in fidelity is automatic, going down is opt-in:
+
+- **Markdown pencil → any `output_format`** — converts to match. A Markdown pencil promoted into an HTML jotbook is rendered through your template; the inked entry is the finalized form of the draft.
+- **HTML pencil → Markdown/Obsidian `output_format`** — kept as `.html` by default. Choosing HTML at draft time was deliberate (you wanted the SVG, the interactive sketch, the richer layout), so the inked entry stays HTML even though your global format is Markdown. The promotion prompt offers an explicit downcast if you actually do want it flattened to Markdown — it's lossy (diagrams become alt text, complex layouts flatten), so it stays opt-in.
+- **HTML pencil → HTML `output_format`** — promotes directly. Any ink-time template finalization (e.g., masthead "draft" → "published") applies.
 
 ## Settings
 
@@ -80,12 +123,14 @@ Settings live at `.claude/jotbook.local.md` in each project. YAML frontmatter fo
 |---|---|---|
 | `jots_dir` | `docs/jotbook/_candidates/` | Where staged jots are written. |
 | `entries_dir` | `docs/jotbook/` | Where inked entries are written. |
-| `output_format` | `markdown` | One of `markdown`, `obsidian`, `html`. See **Output modes** below. |
-| `template_path` | (none) | Path to an HTML template, used only when `output_format: html`. |
+| `pencils_dir` | `docs/jotbook/_pencils/` | Where pencil drafts are written. |
+| `output_format` | `markdown` | One of `markdown`, `obsidian`, `html`. See **Output modes** below. Pencils default to Markdown regardless; opt into the template with `--html`. |
+| `template_path` | (none) | Path to an HTML template, used only when `output_format: html` or when a pencil is drafted with `--html`. |
 | `auto_stage_mode` | `prompt` | One of `off`, `prompt`, `auto`. See **Auto-stage hook** below. |
-| `backlog_threshold` | `8` | Session-start backlog nudge fires when the jot count reaches this number. |
+| `backlog_threshold` | `8` | Session-start jot nudge fires when the jot count reaches this number. |
+| `pencils_threshold` | `3` | Session-start pencil nudge fires when the pencil count reaches this number. Smaller default since pencils are heavier per item. |
 
-The **body** of the settings file (after the closing `---`) is treated by `jotbook-ink` as house-style guidance — voice, tone, terminology, formatting conventions. Use it for things that should shape the writeup but don't fit in a single config field.
+The **body** of the settings file (after the closing `---`) is treated by `jotbook-ink` and `jotbook-pencil` as house-style guidance — voice, tone, terminology, formatting conventions. Use it for things that should shape the writeup but don't fit in a single config field.
 
 Example:
 
@@ -93,9 +138,11 @@ Example:
 ---
 jots_dir: docs/jotbook/_candidates/
 entries_dir: docs/jotbook/
+pencils_dir: docs/jotbook/_pencils/
 output_format: obsidian
 auto_stage_mode: prompt
 backlog_threshold: 12
+pencils_threshold: 3
 ---
 
 # House style
@@ -145,11 +192,11 @@ The hook is intentionally conservative — false positives are annoying. When in
 
 ## Backlog reminder
 
-A SessionStart hook counts the jots in `jots_dir` and surfaces a one-line nudge when the count reaches `backlog_threshold`. The nudge points you at `/jotbook` (the guided flow). The hook is a no-op when the directory doesn't exist or the threshold isn't met.
+A SessionStart hook counts files in `jots_dir` and `pencils_dir` and surfaces a one-line nudge when either reaches its threshold (`backlog_threshold` for jots, `pencils_threshold` for pencils). The nudge points you at `/jotbook` for jots and `/jot review pencils` for pencils. The hook is a no-op when neither threshold is met.
 
 ## Restart caveat
 
-Hooks are loaded when Claude Code starts. Editing `auto_stage_mode` or `backlog_threshold` in the settings file won't take effect until you exit and restart Claude Code. The skills and commands themselves pick up settings changes immediately.
+Hooks are loaded when Claude Code starts. Editing `auto_stage_mode`, `backlog_threshold`, or `pencils_threshold` in the settings file won't take effect until you exit and restart Claude Code. The skills and commands themselves pick up settings changes immediately.
 
 ## Configuration cheatsheet
 
@@ -159,8 +206,11 @@ Hooks are loaded when Claude Code starts. Editing `auto_stage_mode` or `backlog_
 | Have Claude jot explainers silently | `auto_stage_mode: auto` |
 | Ink into an Obsidian vault | `output_format: obsidian` + `entries_dir: <vault-folder>` |
 | Use a custom HTML template | `output_format: html` + `template_path: <path>` |
+| Draft a specific pencil with the HTML template | `/jot pencil <slug> --html` (requires `template_path`) |
 | Change where jots live | `jots_dir: <path>` |
-| Move the backlog nudge threshold | `backlog_threshold: <n>` |
+| Change where pencils live | `pencils_dir: <path>` |
+| Move the jot backlog nudge threshold | `backlog_threshold: <n>` |
+| Move the pencil backlog nudge threshold | `pencils_threshold: <n>` |
 
 ## License
 
