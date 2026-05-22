@@ -1,8 +1,10 @@
 # jotbook
 
-A Claude Code plugin for turning ad-hoc explainers into a curated commonplace book.
+A Claude Code plugin for turning ad-hoc explainers into a curated knowledge base.
 
-When Claude gives you a substantive explanation of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to write it. This plugin gives you a three-stage workflow: **jot** a concept down cheaply in the moment, **review** the backlog periodically, **ink** the survivors into finished entries in your jotbook.
+When Claude gives you a substantive explanation of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to write it. This plugin gives you a three-stage workflow: **jot** a note down cheaply in the moment to revisit this subject, **review** the backlog periodically, **ink** the survivors into finished entries in your jotbook.
+
+By default the plugin will just nudge Claude to ask you if you'd like to save an explainer as a candidate for potential future codification. But the the real magic happens when you auto-detect candidate entries and save them to the backlog automatically for you to review later (`auto_stage_mode`).
 
 ## How it works
 
