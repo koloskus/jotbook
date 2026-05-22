@@ -4,7 +4,9 @@ A Claude Code plugin to help easily create a curated knowledge base from ad-hoc 
 
 When Claude gives you a substantive explainer of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to decide if it's worth saving, let alone write it. This plugin gives you a three-stage workflow: **jot** a note down cheaply in the moment to revisit this subject, **review** the backlog periodically, **ink** the survivors into finished entries in your jotbook.
 
-By default the plugin will just nudge Claude to ask you if you'd like to save an explainer as a candidate for potential future codification. But the the real magic happens when you auto-detect candidate entries and save them to the backlog automatically for you to review later (`auto_stage_mode`).
+By default the plugin will just nudge Claude to ask you if you'd like to save an explainer as a candidate for potential future codification. But the the real magic happens when you auto-detect candidate entries and save them to the backlog silently for you to review later (`auto_stage_mode`). Review your backlog later and ink new entries. Inking also updates existing inked entries with new links if relevant for all you Obsidian node heads.
+
+Format your jotbook as linked markdown (default), Obsidian vault, or HTML files for added pizzazz.
 
 ## How it works
 
