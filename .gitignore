@@ -1,0 +1,12 @@
+# Local Claude Code session state (do not commit)
+.claude/settings.local.json
+.claude/*.local.md
+
+# macOS
+.DS_Store
+
+# Editor noise
+*.swp
+*.swo
+.vscode/
+.idea/
