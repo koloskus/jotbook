@@ -80,22 +80,34 @@ Lead with the inventory; put your recommendations at the end. Keep the whole thi
 
 ### 4. Solicit decisions
 
-Ask the user, in plain language, what to do. Don't present a numbered menu — let them respond in free form. Mention all six available actions in the prompt so the user knows the surface. Example:
+Ask the user, in plain language, what to do. Don't present a numbered menu — let them respond in free form. Every action surfaced here is acted on directly in step 5 — `ink` and `pencil` dispatch into their respective skills inside this same flow; no follow-up slash command is required. Mention all six available actions so the user knows the surface. Example:
 
 > Decisions? You can say things like "drop the feature-flag pair", "merge X and Y into Z", "tweak cache-eviction to focus on hot keys", "ink cache-eviction-policy", "pencil feature-flag-system" (draft first, decide later), or "keep everything for now".
 
 ### 5. Apply
 
-For each decided action:
+Apply structural actions (drop / merge / tweak) first, then dispatch ink and pencil actions. For each decided action:
 
 - **Keep** — no-op.
 - **Drop <slug>** — delete the jot file. If more than one is being dropped, list what you're about to delete first and confirm.
 - **Merge <slug-a> + <slug-b> → <new-slug>** — create a new jot file combining the descriptions (still one or two lines total); union the `Files:` lines; delete the merged-in originals. Date the merged jot today.
 - **Tweak <slug> — <new framing>** — the inferred subject was close but the framing needs a nudge. Edit the jot's description line in place to reflect the user's directive. Optionally update the `Files:` line if the new framing implicates different sources. This stays lightweight — apply the change in one pass, do not enter a back-and-forth discussion. If the directive is genuinely ambiguous, ask exactly one clarifying question, then apply and move on.
-- **Ink <slug>** — leave the jot file in place. If you are running as part of the bare `/jotbook-ink` flow, hand off to `jotbook-ink` on that slug. If you are running as a standalone `/jot review`, tell the user the next step is `/jot ink <slug>` and stop — do not invoke `jotbook-ink` yourself in that mode.
-- **Pencil <slug>** (optionally with `--html`) — leave the jot file in place. If you are running as part of the bare `/jotbook-ink` flow, hand off to `jotbook-pencil` on that slug, forwarding the `--html` flag if the user specified it. If you are running as a standalone `/jot review`, tell the user the next step is `/jot pencil <slug>` (or `/jot pencil <slug> --html`) and stop — do not invoke `jotbook-pencil` yourself in that mode.
+- **Ink <slug>** — leave the jot file in place and hand off to `jotbook-ink` on that slug. The ink skill takes it from there (including its own pencil-promotion question if a pencil already exists for the slug).
+- **Pencil <slug>** (optionally with `--html`) — leave the jot file in place and hand off to `jotbook-pencil` on that slug, forwarding `--html` if the user specified it.
 
-After applying, give a one-line summary: `Dropped N, merged M into K, tweaked T, kept P, ready to ink: <list>, ready to pencil: <list>`. Omit the trailing fields when their lists are empty.
+If the user marked more than one jot for ink and/or pencil in a single decision turn, ask once before dispatching:
+
+> "You marked <N> jots for ink/pencil. Checkpoint between each (so you can redirect partway), or batch through them in order?"
+
+Default to checkpoint if the user doesn't pick. Either way, dispatch them in the order the user named them.
+
+After all actions complete, give a one-line summary:
+
+```
+Dropped N, merged M into K, tweaked T, kept P, inked: <list>, penciled: <list>.
+```
+
+Omit the trailing fields when their lists are empty.
 
 ## What NOT to do
 
@@ -103,5 +115,5 @@ After applying, give a one-line summary: `Dropped N, merged M into K, tweaked T,
 - Don't auto-drop "old" jots just because they're old. Age is information, not a verdict.
 - Don't propose creating a new jot that wasn't already staged. Use `jotbook-stage` for that.
 - Don't read every referenced source file during review — the jot text is enough to make keep/drop decisions. Save deep reading for `jotbook-ink` or `jotbook-pencil`.
-- Don't invoke `jotbook-pencil` (or `jotbook-ink`) without explicit user marking — same rule as ink.
+- Don't invoke `jotbook-ink` or `jotbook-pencil` without an explicit user mark. The user's free-form reply IS the mark — once they've said "ink X" or "pencil Y", dispatch directly; do not ask them to re-issue the request as a slash command.
 - Don't quietly re-decide for a jot that already has a pencil. Point the user at `/jot review pencils` so they can judge from the long form.

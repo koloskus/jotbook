@@ -18,15 +18,11 @@ Read the invocation arguments and route as follows. Do this **before** reading t
 
 1. **Plugin not yet initialized** (no `.claude/jotbook.local.md` in the project) → invoke the `jotbook-init` skill. After init completes, stop. Do not auto-chain into curation or the per-slug procedure — let the user re-invoke once they're set up.
 
-2. **No slug arguments** → the curation session:
-   1. Invoke the `jotbook-review` skill to inventory jots, flag pencils, and surface suggested merges/drops.
-   2. Let the user respond with their decisions (drop / merge / tweak / ink / pencil / keep). The `pencil` decision accepts an optional `--html` flag.
-   3. Apply the structural decisions (drops, merges, tweaks) via `jotbook-review`.
-   4. For each jot marked as **ink**, re-enter this skill's per-slug procedure (below) with that slug. If multiple, ask whether to checkpoint per-jot or batch. When the per-slug procedure detects an existing pencil, let it handle the promote-vs-regenerate question.
-   5. For each jot marked as **pencil**, hand off to the `jotbook-pencil` skill on that slug (forwarding `--html` if specified). Same checkpoint/batch question.
-   6. End with a one-line summary: what was dropped, merged, tweaked, inked, and penciled. If any pencils were created, remind the user that `/jotbook-pencil-review` is where they'll evaluate them next.
+2. **No slug arguments** → the curation session. Hand off to `jotbook-review`, which owns the full decision loop: it inventories jots, takes the user's free-form decisions (drop / merge / tweak / ink / pencil / keep, the latter two accepting their respective slugs and any `--html` flag), applies structural changes in place, and dispatches into this skill's per-slug procedure (for `ink`) or `jotbook-pencil` (for `pencil`) directly. Do not duplicate that orchestration here — let the review skill drive end-to-end.
 
-   If the jot backlog is empty at step 1, say so in one line and stop — do not proceed.
+   When the per-slug procedure is re-entered from review and detects an existing pencil, let it handle the promote-vs-regenerate question.
+
+   If the jot backlog is empty when review starts, it reports and stops on its own — no further action needed here.
 
 3. **One or more slugs supplied** → the targeted form. Continue with the per-slug procedure below (Resolve configuration → Inputs → Procedure).
 
