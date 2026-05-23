@@ -1,16 +1,13 @@
 {
   "name": "jotbook",
   "description": "Capture explainers as lightweight jots, curate them periodically, then pencil or ink them into long-form entries. Use /jotbook-ink (or /jot for granular actions).",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": {
     "name": "Jack Koloskus"
   },
   "license": "MIT",
   "homepage": "https://github.com/koloskus/jotbook",
   "repository": "https://github.com/koloskus/jotbook",
-  "bugs": {
-    "url": "https://github.com/koloskus/jotbook/issues"
-  },
   "keywords": [
     "documentation",
     "knowledge-base",
