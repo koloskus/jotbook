@@ -1,18 +1,6 @@
 {
-  "description": "Auto-jot substantive explainers and surface the jot and pencil backlogs when they grow.",
+  "description": "Surface the jot and pencil backlogs at session start when they grow past their thresholds.",
   "hooks": {
-    "Stop": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "You are the jotbook auto-stage hook. Decide whether to nudge the user about a recently-given explainer.\n\nProcedure:\n1. Try to read `.claude/jotbook.local.md` in the project root. If the file does not exist, return approve and stop.\n2. Parse the YAML frontmatter for the `auto_stage_mode` field. Valid values: `off`, `prompt`, `auto`. If the field is missing or set to `off`, return approve and stop.\n3. Look at the just-completed assistant turn. Decide whether it was a *substantive explainer* — a multi-paragraph explanation of a concept, system, or mechanism that the user might plausibly want to revisit in long-form later. SKIP if it was: a one-line answer, a code edit with minimal narration, routine tool use, a clarification, a status update, or anything the user clearly wouldn't write up.\n4. If not worth jotting, return approve.\n5. If worth jotting, derive a 2–5 word kebab-case slug from the subject and:\n   - If `auto_stage_mode` is `prompt`: return `{\"decision\": \"block\", \"reason\": \"In one line, ask the user: 'That looked worth jotting — want me to /jot it as <slug>?'. Do not jot without confirmation.\"}`\n   - If `auto_stage_mode` is `auto`: return `{\"decision\": \"block\", \"reason\": \"Invoke the jotbook-stage skill on the just-completed explainer using slug <slug>. After staging, report only `(jotted: <slug>)` on its own line and stop.\"}`\n\nBe conservative. False positives are annoying. When in genuine doubt, return approve.",
-            "timeout": 20
-          }
-        ]
-      }
-    ],
     "SessionStart": [
       {
         "matcher": "*",

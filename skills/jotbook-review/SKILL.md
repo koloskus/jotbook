@@ -1,6 +1,6 @@
 ---
 name: jotbook-review
-description: Review the staged jot backlog and decide what to keep, drop, merge, tweak, pencil, or ink into a full entry. Use periodically when the backlog has accumulated. Surfaces overlap between jots, proposes consolidations before they're inked, and flags jots that already have a pencil in progress. Invoked by `/jot review` or as the first phase of the bare `/jotbook` flow.
+description: Review the staged jot backlog and decide what to keep, drop, merge, tweak, pencil, or ink into a full entry. Use periodically when the backlog has accumulated. Surfaces overlap between jots, proposes consolidations before they're inked, and flags jots that already have a pencil in progress. Invoked by `/jotbook-review` (or `/jot review`), or as the first phase of `/jotbook-ink` (the no-args curation flow).
 ---
 
 # Review the jot backlog
@@ -13,7 +13,7 @@ Read `.claude/jotbook.local.md` if present. From its frontmatter, extract:
 
 | field | default | meaning |
 |---|---|---|
-| `jots_dir` | `docs/jotbook/_candidates/` | where staged jots live |
+| `jots_dir` | `docs/jotbook/_jots/` | where staged jots live |
 | `pencils_dir` | `docs/jotbook/_pencils/` | where pencils live — checked to flag jots that already have one |
 
 If `jots_dir` doesn't exist or contains no jots, report that in one line and stop.
@@ -92,8 +92,8 @@ For each decided action:
 - **Drop <slug>** — delete the jot file. If more than one is being dropped, list what you're about to delete first and confirm.
 - **Merge <slug-a> + <slug-b> → <new-slug>** — create a new jot file combining the descriptions (still one or two lines total); union the `Files:` lines; delete the merged-in originals. Date the merged jot today.
 - **Tweak <slug> — <new framing>** — the inferred subject was close but the framing needs a nudge. Edit the jot's description line in place to reflect the user's directive. Optionally update the `Files:` line if the new framing implicates different sources. This stays lightweight — apply the change in one pass, do not enter a back-and-forth discussion. If the directive is genuinely ambiguous, ask exactly one clarifying question, then apply and move on.
-- **Ink <slug>** — leave the jot file in place. If you are running as part of the bare `/jotbook` flow, hand off to `jotbook-ink` on that slug. If you are running as a standalone `/jot review`, tell the user the next step is `/jot ink <slug>` and stop — do not invoke `jotbook-ink` yourself in that mode.
-- **Pencil <slug>** (optionally with `--html`) — leave the jot file in place. If you are running as part of the bare `/jotbook` flow, hand off to `jotbook-pencil` on that slug, forwarding the `--html` flag if the user specified it. If you are running as a standalone `/jot review`, tell the user the next step is `/jot pencil <slug>` (or `/jot pencil <slug> --html`) and stop — do not invoke `jotbook-pencil` yourself in that mode.
+- **Ink <slug>** — leave the jot file in place. If you are running as part of the bare `/jotbook-ink` flow, hand off to `jotbook-ink` on that slug. If you are running as a standalone `/jot review`, tell the user the next step is `/jot ink <slug>` and stop — do not invoke `jotbook-ink` yourself in that mode.
+- **Pencil <slug>** (optionally with `--html`) — leave the jot file in place. If you are running as part of the bare `/jotbook-ink` flow, hand off to `jotbook-pencil` on that slug, forwarding the `--html` flag if the user specified it. If you are running as a standalone `/jot review`, tell the user the next step is `/jot pencil <slug>` (or `/jot pencil <slug> --html`) and stop — do not invoke `jotbook-pencil` yourself in that mode.
 
 After applying, give a one-line summary: `Dropped N, merged M into K, tweaked T, kept P, ready to ink: <list>, ready to pencil: <list>`. Omit the trailing fields when their lists are empty.
 

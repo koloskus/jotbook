@@ -5,7 +5,7 @@ set -euo pipefail
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
 SETTINGS_FILE="$PROJECT_DIR/.claude/jotbook.local.md"
 
-JOTS_DIR="docs/jotbook/_candidates"
+JOTS_DIR="docs/jotbook/_jots"
 PENCILS_DIR="docs/jotbook/_pencils"
 JOTS_THRESHOLD=8
 PENCILS_THRESHOLD=3
@@ -42,9 +42,9 @@ PENCILS_OVER=0
 [[ "$PENCILS_COUNT" -ge "$PENCILS_THRESHOLD" ]] && PENCILS_OVER=1
 
 if [[ "$JOTS_OVER" == "1" && "$PENCILS_OVER" == "1" ]]; then
-  MESSAGE="Jotbook: $JOTS_COUNT jots staged (threshold $JOTS_THRESHOLD), $PENCILS_COUNT pencils awaiting review (threshold $PENCILS_THRESHOLD). Run /jotbook to curate jots, /jot review pencils for pencils."
+  MESSAGE="Jotbook: $JOTS_COUNT jots staged (threshold $JOTS_THRESHOLD), $PENCILS_COUNT pencils awaiting review (threshold $PENCILS_THRESHOLD). Run /jotbook-ink to curate jots, /jot review pencils for pencils."
 elif [[ "$JOTS_OVER" == "1" ]]; then
-  MESSAGE="Jotbook: $JOTS_COUNT jots staged (threshold $JOTS_THRESHOLD). Run /jotbook to curate."
+  MESSAGE="Jotbook: $JOTS_COUNT jots staged (threshold $JOTS_THRESHOLD). Run /jotbook-ink to curate."
 elif [[ "$PENCILS_OVER" == "1" ]]; then
   MESSAGE="Jotbook: $PENCILS_COUNT pencils awaiting review (threshold $PENCILS_THRESHOLD). Run /jot review pencils to evaluate."
 else

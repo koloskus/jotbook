@@ -1,13 +1,47 @@
 ---
 name: jotbook-ink
-description: Ink one or more reviewed jots into a finished long-form entry in the jotbook. Reads the referenced source files, optionally consolidates multiple jots, and writes the entry under the configured entries directory. If a pencil already exists for the slug, offers to promote it (skipping gather/plan/render) instead of regenerating from scratch. Removes consumed jots (and the promoted pencil, if any) on success. Invoked by `/jot ink <slug>[,<slug>]`, by the final phase of the bare `/jotbook` flow, or by the pencil-review `ink` decision.
+description: The primary jotbook entry point. With no slug arguments, runs the guided curation session (review the backlog, mark decisions, then ink/pencil the chosen ones). With one or more slug arguments, inks those specific reviewed jots into finished long-form entries — reads referenced source files, optionally consolidates multiple jots, writes the entry under the configured entries directory, and removes consumed jots. If a pencil already exists for a slug, offers to promote it instead of regenerating. If the plugin hasn't been initialized in the project, routes to `jotbook-init` instead. Invoked by `/jotbook-ink [<slug>[,<slug>]]` (primary), `/jot ink <slug>`, or the pencil-review `ink` decision.
 ---
 
-# Ink a jot into the jotbook
+# Ink the jotbook
 
-You're turning a jot (or a small set of related jots) into a long-form entry. The jot file is a *pointer*; the actual content needs to be reconstructed from the referenced files, conversation history, and — if context is thin — direct questions to the user. The output is an inked entry in the jotbook.
+This is the primary jotbook entry point. It has two shapes, both gated on initialization:
 
-If a **pencil** (provisional draft) already exists for the requested slug, you can promote it instead of regenerating — see the **Pencil promotion** branch in step 2.
+- **`/jotbook-ink` (no arguments)** — guided curation session. Review the backlog, mark decisions, then ink or pencil the chosen ones.
+- **`/jotbook-ink <slug>[,<slug>]`** — ink one or more specific reviewed jots into finished long-form entries (the targeted form).
+
+If the plugin hasn't been initialized in this project (no `.claude/jotbook.local.md`), either shape routes to `jotbook-init` first. After init completes, the user re-invokes whichever flow they actually wanted.
+
+## Entry-point dispatch
+
+Read the invocation arguments and route as follows. Do this **before** reading the rest of the skill:
+
+1. **Plugin not yet initialized** (no `.claude/jotbook.local.md` in the project) → invoke the `jotbook-init` skill. After init completes, stop. Do not auto-chain into curation or the per-slug procedure — let the user re-invoke once they're set up.
+
+2. **No slug arguments** → the curation session:
+   1. Invoke the `jotbook-review` skill to inventory jots, flag pencils, and surface suggested merges/drops.
+   2. Let the user respond with their decisions (drop / merge / tweak / ink / pencil / keep). The `pencil` decision accepts an optional `--html` flag.
+   3. Apply the structural decisions (drops, merges, tweaks) via `jotbook-review`.
+   4. For each jot marked as **ink**, re-enter this skill's per-slug procedure (below) with that slug. If multiple, ask whether to checkpoint per-jot or batch. When the per-slug procedure detects an existing pencil, let it handle the promote-vs-regenerate question.
+   5. For each jot marked as **pencil**, hand off to the `jotbook-pencil` skill on that slug (forwarding `--html` if specified). Same checkpoint/batch question.
+   6. End with a one-line summary: what was dropped, merged, tweaked, inked, and penciled. If any pencils were created, remind the user that `/jotbook-pencil-review` is where they'll evaluate them next.
+
+   If the jot backlog is empty at step 1, say so in one line and stop — do not proceed.
+
+3. **One or more slugs supplied** → the targeted form. Continue with the per-slug procedure below (Resolve configuration → Inputs → Procedure).
+
+### Dispatch hard rules
+
+- Do not silently invent slugs or jots that don't exist on disk.
+- Do not invoke `jotbook-pencil` or the per-slug procedure without the user explicitly marking a jot as ready.
+- Do not enter the pencil-review flow from here — that stays at `/jotbook-pencil-review`.
+- If routing to `jotbook-init`, defer entirely to it. Don't continue on a fresh just-initialized jotbook (there are no jots yet anyway).
+
+---
+
+The remaining sections apply only to the **targeted-ink path** (one or more slugs supplied). You're turning a specific jot (or a small set of related jots) into a long-form entry. The jot file is a *pointer*; the actual content needs to be reconstructed from the referenced files, conversation history, and — if context is thin — direct questions to the user. The output is an inked entry in the jotbook.
+
+If a **pencil** (provisional draft) already exists for the requested slug, you can promote it instead of regenerating — see the **Pencil promotion** branch in step 2 of Procedure.
 
 ## Resolve configuration
 
@@ -15,7 +49,7 @@ Read `.claude/jotbook.local.md` if present. From the frontmatter, extract:
 
 | field | default | meaning |
 |---|---|---|
-| `jots_dir` | `docs/jotbook/_candidates/` | where staged jots live |
+| `jots_dir` | `docs/jotbook/_jots/` | where staged jots live |
 | `pencils_dir` | `docs/jotbook/_pencils/` | where pencils live (checked for promotion) |
 | `entries_dir` | `docs/jotbook/` | where inked entries are written |
 | `output_format` | `markdown` | one of `markdown`, `obsidian`, `html` |

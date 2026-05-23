@@ -1,6 +1,6 @@
 ---
 name: jotbook-pencil
-description: Pencil one or more jots into a provisional long-form draft for evaluation. Renders the full elaboration without committing — source jot(s) are preserved and cross-links into existing entries are NOT updated. Promotion to a finished entry happens later, via `/jot review pencils`. Invoked by `/jot pencil <slug>[,<slug>] [--html]` or as a decision in the `/jotbook` flow.
+description: Pencil one or more jots into a provisional long-form draft for evaluation. Renders the full elaboration without committing — source jot(s) are preserved and cross-links into existing entries are NOT updated. Promotion to a finished entry happens later, via `/jotbook-pencil-review`. Invoked by `/jotbook-pencil <slug>[,<slug>] [--html]` (or `/jot pencil ...`), or as a `pencil` decision inside the `/jotbook-ink` curation flow.
 ---
 
 # Pencil a jot into a provisional draft
@@ -13,14 +13,14 @@ Read `.claude/jotbook.local.md` if present. From the frontmatter, extract:
 
 | field | default | meaning |
 |---|---|---|
-| `jots_dir` | `docs/jotbook/_candidates/` | where staged jots live |
+| `jots_dir` | `docs/jotbook/_jots/` | where staged jots live |
 | `pencils_dir` | `docs/jotbook/_pencils/` | where pencils are written |
 | `output_format` | `markdown` | global output mode — informs cross-link style but does NOT change a pencil's format unless `--html` is passed |
 | `template_path` | (none) | path to an HTML template — required when `--html` is passed |
 
 The **body** of the settings file (everything after the closing `---`) is optional house-style guidance — voice, tone, conventions, terminology. If present, treat it as authoritative for stylistic decisions.
 
-If `pencils_dir` does not exist, create it.
+If `pencils_dir` does not exist, create it — but first briefly note to the user what you're doing and why, e.g. *"Creating `<pencils_dir>` to hold pencil drafts (first time penciling in this project, or the directory was renamed in settings)."* This avoids a context-free mkdir prompt.
 
 ## Inputs
 

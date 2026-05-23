@@ -20,11 +20,11 @@ When Claude gives you a substantive explainer of something — a system, a conce
 - **Review** is curation: list the backlog, propose merges, drop the dead weight, tweak framings, mark the survivors.
 - **Ink** is the actual writeup: read the referenced files, reconstruct the explanation, produce a finished entry. Markdown by default; Obsidian or HTML on request.
 
-You can drive each stage by hand with `/jot`, or just run `/jotbook` for a guided session that walks review → ink in one pass.
+You can drive each stage by hand with `/jot`, or just run `/jotbook-ink` for a guided session that walks review → ink in one pass.
 
 ---
 
-By default, the plugin will just nudge Claude to ask if you'd like to save an explainer as a candidate for future codification. But the the real magic happens when you auto-detect candidate entries and save them to the backlog silently for you to review later (`auto_stage_mode`). 
+By default, when Claude gives you a substantive explainer it'll proactively stage it as a candidate for future codification — briefly noting what it jotted and writing the small pointer file under your jots directory. You review the backlog later and decide which candidates are worth elaborating into full entries.
 
 Review your backlog later, cut what's not relevant, and ink new entries. Inking also updates existing inked entries with new links (if relevant) for all you Obsidian node heads.
 
@@ -42,38 +42,41 @@ Or install manually by cloning into your Claude Code plugins directory.
 
 ## Quickstart
 
-In any project:
+In any project, run either:
 
 ```
+/jotbook-ink
+# or, equivalently when nothing is set up yet:
 /jot init
 ```
 
-This writes a starter `.claude/jotbook.local.md` settings file (and offers to add it to your `.gitignore`). Edit the defaults if you want; otherwise everything works out of the box.
+The first run detects that the plugin hasn't been initialized in this project yet and writes a starter `.claude/jotbook.local.md` settings file (offering to add it to your `.gitignore` along the way). Edit the defaults if you want; otherwise everything works out of the box. Once initialized, `/jotbook-ink` becomes the guided curation flow.
 
 Then, during normal use:
 
 | When | Do |
 |---|---|
-| Claude just gave you an explainer you'll want to revisit | `/jot` (or let the auto-stage hook nudge you) |
-| Your jot backlog has gotten chunky | `/jotbook` |
+| Claude just gave you an explainer you'll want to revisit | `/jot` (or let Claude stage it on its own — it'll usually offer after a real explainer) |
+| Your jot backlog has gotten chunky | `/jotbook-ink` |
 | You want to ink one specific jot right now | `/jot ink <slug>` |
 | You want to draft a long-form preview before deciding | `/jot pencil <slug>` |
 
 ## Commands
 
-The plugin uses a dual-command shape: `/jotbook` for the *artifact* (the whole curation flow), `/jot` for the *verb* (atomic actions on individual jots).
+Most operations have **two equivalent invocation forms**: the direct skill alias (`/jotbook-<skill>`) or via the `/jot` toolkit (`/jot <subcommand>`). Both route to the same skills; pick whichever your fingers prefer. See the namespace note below the table for why skills are prefixed with `jotbook-` rather than auto-namespaced under `/jotbook:`.
 
 | Command | Purpose |
 |---|---|
-| `/jotbook` | **Guided curation flow.** Reviews the backlog, lets you drop/merge/tweak/ink/pencil jots, then inks anything you marked as ready. The primary entry point. |
-| `/jot [subject]` | Stage a jot. With no argument, infers from recent conversation; with an argument, uses it as the subject phrase. Also invoked by the auto-stage hook. |
-| `/jot review` | Inventory the jot backlog and apply structural decisions only — no ink step. |
-| `/jot review pencils` | Inventory the pencil backlog and decide what to ink, drop, revise, edit, or keep. |
-| `/jot ink <slug>[,<slug>]` | Ink a jot (or several) into a finished entry. Comma-separated slugs consolidate into one entry. If a pencil already exists for the slug, you'll be offered to promote it instead of regenerating. |
-| `/jot pencil <slug>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. |
-| `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). |
+| `/jotbook-ink [<slug>[,<slug>]]` | **Primary entry point.** With no args, runs the guided curation session (review backlog → mark decisions → apply ink/pencil to the chosen ones). With one or more slugs, inks those specific jots into finished entries (equivalent to `/jot ink <slug>`). Routes to `jotbook-init` if the plugin hasn't been initialized in this project yet. If a pencil already exists for the slug, you'll be offered to promote it instead of regenerating. |
+| `/jot [subject]` | Stage a jot. With no argument, infers from recent conversation; with an argument, uses it as the subject phrase. Claude also invokes this automatically after substantive explainers, via the skill's auto-trigger description. (Equivalent: `/jotbook-stage`.) |
+| `/jot review` | Inventory the jot backlog and apply structural decisions only — no ink step. (Equivalent: `/jotbook-review`.) |
+| `/jot review pencils` | Inventory the pencil backlog and decide what to ink, drop, revise, edit, or keep. (Equivalent: `/jotbook-pencil-review`.) |
+| `/jot pencil <slug>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. (Equivalent: `/jotbook-pencil <slug>`.) |
+| `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). (Equivalent: `/jotbook-init`.) |
 
 Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
+
+> **Note on Claude Code's plugin namespace:** Claude Code's namespacing behavior is asymmetric. Command files in `commands/` are auto-namespaced as `/<plugin>:<command>` (so `jot.md` becomes `/jotbook:jot`). Skill files in `skills/`, however, surface as **bare** slash commands using their literal `name:` field — a skill named `foo` becomes `/foo`, *not* `/jotbook:foo`. That collides with built-in skills like `/init` and `/review` and with skills from other plugins. To dodge collisions, every jotbook skill is manually prefixed: `jotbook-init`, `jotbook-ink`, `jotbook-pencil`, etc. Typing `/jotbook` in your terminal triggers autocomplete listing every `jotbook-*` skill plus `/jotbook:jot`; pick from there.
 
 ## Pencil drafts
 
@@ -89,7 +92,7 @@ Pencils live in their own backlog (`pencils_dir`, default `docs/jotbook/_pencils
 /jot pencil <slug> --html     # opt into the HTML template (requires template_path)
 ```
 
-You can also create a pencil from inside the `/jotbook` flow: `pencil <slug>` is a valid decision alongside `ink`, `drop`, `merge`, `tweak`, and `keep`.
+You can also create a pencil from inside the `/jotbook-ink` flow: `pencil <slug>` is a valid decision alongside `ink`, `drop`, `merge`, `tweak`, and `keep`.
 
 ### Reviewing pencils
 
@@ -121,12 +124,11 @@ Settings live at `.claude/jotbook.local.md` in each project. YAML frontmatter fo
 
 | Field | Default | Meaning |
 |---|---|---|
-| `jots_dir` | `docs/jotbook/_candidates/` | Where staged jots are written. |
+| `jots_dir` | `docs/jotbook/_jots/` | Where staged jots are written. |
 | `entries_dir` | `docs/jotbook/` | Where inked entries are written. |
 | `pencils_dir` | `docs/jotbook/_pencils/` | Where pencil drafts are written. |
 | `output_format` | `markdown` | One of `markdown`, `obsidian`, `html`. See **Output modes** below. Pencils default to Markdown regardless; opt into the template with `--html`. |
 | `template_path` | (none) | Path to an HTML template, used only when `output_format: html` or when a pencil is drafted with `--html`. |
-| `auto_stage_mode` | `prompt` | One of `off`, `prompt`, `auto`. See **Auto-stage hook** below. |
 | `backlog_threshold` | `8` | Session-start jot nudge fires when the jot count reaches this number. |
 | `pencils_threshold` | `3` | Session-start pencil nudge fires when the pencil count reaches this number. Smaller default since pencils are heavier per item. |
 
@@ -136,11 +138,10 @@ Example:
 
 ```yaml
 ---
-jots_dir: docs/jotbook/_candidates/
+jots_dir: docs/jotbook/_jots/
 entries_dir: docs/jotbook/
 pencils_dir: docs/jotbook/_pencils/
 output_format: obsidian
-auto_stage_mode: prompt
 backlog_threshold: 12
 pencils_threshold: 3
 ---
@@ -178,32 +179,28 @@ If you'd like to build an HTML template for this mode, start a fresh conversatio
 
 Notion doesn't support file-based writes, so there's no `notion` output mode. The default `markdown` output is Notion-import-friendly, though — drag a finished entry into a Notion page and the structure comes through cleanly. A real Notion integration would need API access, likely as a separate plugin.
 
-## Auto-stage hook
+## Auto-staging
 
-The plugin includes a Stop hook that fires when Claude finishes responding and can nudge you about an explainer worth jotting.
+There's no separate "auto-stage hook" in the plugin — staging is driven by the `jotbook-stage` skill's description, which tells Claude to invoke the skill at the end of any turn where the last response was a substantive multi-paragraph explainer worth revisiting. Claude does the judgment call in-band: after a real explainer it'll briefly narrate ("Jotted as `cache-eviction-policy`") and you'll see the file land under `jots_dir`. After a short answer, status update, or jotbook-skill output, it won't trigger.
 
-| `auto_stage_mode` | Behavior |
-|---|---|
-| `off` | Hook is a no-op. Stage manually with `/jot`. |
-| `prompt` (default) | Hook evaluates the last turn; if it looks like a substantive explainer, asks you in one line whether to jot it. You decide. |
-| `auto` | Hook evaluates the last turn; if substantive, silently jots it with an inferred slug. Reports a single `(jotted: <slug>)` line. Skips silently if the subject is ambiguous. |
+If Claude misses something you wanted staged, run `/jot [subject]` explicitly. If Claude stages something you didn't want, `/jot review` (or `/jotbook-review`) lets you drop it in seconds.
 
-The hook is intentionally conservative — false positives are annoying. When in doubt it does nothing.
+**For lower friction:** consider adding `Write(docs/jotbook/_jots/**)` to your project's `.claude/settings.json` `permissions.allow` list, so the staging skill's file write doesn't prompt you each time. The plugin doesn't ship this allow rule (permissions are a per-user decision), but it's a one-line addition.
 
 ## Backlog reminder
 
-A SessionStart hook counts files in `jots_dir` and `pencils_dir` and surfaces a one-line nudge when either reaches its threshold (`backlog_threshold` for jots, `pencils_threshold` for pencils). The nudge points you at `/jotbook` for jots and `/jot review pencils` for pencils. The hook is a no-op when neither threshold is met.
+A SessionStart hook counts files in `jots_dir` and `pencils_dir` and surfaces a one-line nudge when either reaches its threshold (`backlog_threshold` for jots, `pencils_threshold` for pencils). The nudge points you at `/jotbook-ink` for jots and `/jot review pencils` for pencils. The hook is a no-op when neither threshold is met.
 
 ## Restart caveat
 
-Hooks are loaded when Claude Code starts. Editing `auto_stage_mode`, `backlog_threshold`, or `pencils_threshold` in the settings file won't take effect until you exit and restart Claude Code. The skills and commands themselves pick up settings changes immediately.
+The SessionStart hook is loaded when Claude Code starts. Editing `backlog_threshold` or `pencils_threshold` in the settings file won't take effect until you exit and restart Claude Code. The skills and commands themselves pick up settings changes immediately.
 
 ## Configuration cheatsheet
 
 | To… | Set… |
 |---|---|
-| Disable the staging nudge entirely | `auto_stage_mode: off` |
-| Have Claude jot explainers silently | `auto_stage_mode: auto` |
+| Skip the staging prompt entirely | Allow `Write(docs/jotbook/_jots/**)` in project `.claude/settings.json` |
+| Tell Claude to stop auto-staging | Add to project `CLAUDE.md`: "Do not invoke jotbook-stage automatically." |
 | Ink into an Obsidian vault | `output_format: obsidian` + `entries_dir: <vault-folder>` |
 | Use a custom HTML template | `output_format: html` + `template_path: <path>` |
 | Draft a specific pencil with the HTML template | `/jot pencil <slug> --html` (requires `template_path`) |

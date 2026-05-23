@@ -1,6 +1,6 @@
 ---
 name: jotbook-pencil-review
-description: Review the pencil backlog and decide what to ink, drop, revise, edit, or keep. Use when pencils have accumulated and you want to evaluate provisional long-form drafts before promoting them. Surfaces age, source jots, and format for each pencil. Invoked by `/jot review pencils`.
+description: Review the pencil backlog and decide what to ink, drop, revise, edit, or keep. Use when pencils have accumulated and you want to evaluate provisional long-form drafts before promoting them. Surfaces age, source jots, and format for each pencil. Invoked by `/jotbook-pencil-review` (or `/jot review pencils`).
 ---
 
 # Review the pencil backlog
@@ -14,7 +14,7 @@ Read `.claude/jotbook.local.md` if present. From its frontmatter, extract:
 | field | default | meaning |
 |---|---|---|
 | `pencils_dir` | `docs/jotbook/_pencils/` | where pencils live |
-| `jots_dir` | `docs/jotbook/_candidates/` | needed to verify source-jot existence |
+| `jots_dir` | `docs/jotbook/_jots/` | needed to verify source-jot existence |
 
 If `pencils_dir` doesn't exist or contains no pencils, report that in one line and stop.
 

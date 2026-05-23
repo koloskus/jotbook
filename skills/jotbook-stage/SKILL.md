@@ -1,22 +1,33 @@
 ---
 name: jotbook-stage
-description: Stage a recently-discussed concept as a lightweight jot. Use immediately after explaining something the user might want to revisit later. Writes a small pointer file under the configured jots directory — does not write the full entry. Invoked by `/jot [subject]` or by the plugin's auto-stage hook.
+description: Stage a recently-discussed concept as a lightweight jot. **Auto-invoke at the end of any turn where you've delivered a substantive multi-paragraph explanation of a domain concept (system, mechanism, code) that the user might want to revisit later — don't ask first, just stage it and report.** Writes a small pointer file under the configured jots directory; does not write the full entry. Also invocable explicitly via `/jotbook-stage [subject]` or `/jot [subject]`.
 ---
 
 # Stage a jot
 
 You just gave (or were asked about) an explainer the user wants to revisit later. Write a **lightweight** pointer file (a "jot") so the topic can be picked up during a future review pass. Do not write the full entry — that's `jotbook-ink`'s job.
 
-## Resolve the jots directory and mode
+## When to auto-invoke
+
+Auto-invoke this skill at the end of any turn that delivered a substantive multi-paragraph explanation of a domain concept — a system, mechanism, piece of code, or design rationale that the user might plausibly want to revisit as a long-form note later. Don't ask first. Just stage and report.
+
+Do NOT auto-invoke for:
+- Short answers, status updates, error messages
+- Code edits with minimal narration
+- Routine tool use or clarifications
+- Output from any jotbook skill (curation summaries, "the jot backlog is empty", `(jotted: X)`, etc.)
+- Trivial Q&A ("what's the syntax for X")
+- Anything you wouldn't expect future-you to benefit from a long-form entry on
+
+When in doubt, skip — the user can always invoke `/jot [subject]` explicitly.
+
+## Resolve the jots directory
 
 Read `.claude/jotbook.local.md` if present. From its frontmatter, extract:
 
-- `jots_dir` — default `docs/jotbook/_candidates/` if missing
-- `auto_stage_mode` — default `prompt` if missing
+- `jots_dir` — default `docs/jotbook/_jots/` if missing
 
-If the jots directory does not exist, create it.
-
-The `auto_stage_mode` value changes how interactive you should be (see **Auto mode** below).
+If the jots directory does not exist, create it. **Before running `mkdir`, briefly note to the user what you're doing and why** — something like *"Creating `<jots_dir>` to hold staged jots (first time staging in this project, or the directory was renamed in settings)."* This avoids a context-free permission prompt that could confuse a user who set up jotbook days earlier and forgot.
 
 ## What to write
 
@@ -54,21 +65,11 @@ The point of a tiny jot is that some won't survive review, and you should be abl
 
 1. Identify the subject:
    - If the user passed an argument, use that as the subject phrase.
-   - Otherwise, infer from the most recent explainer in the conversation. If there isn't a clear recent explainer, ask the user what they want jotted rather than guessing. (In auto mode, see below — skip silently instead of asking.)
+   - Otherwise (auto-invocation or no-arg `/jot`), infer from the most recent explainer in the conversation. If there isn't a clear recent explainer, ask the user what they want jotted rather than guessing.
 2. Derive the slug (kebab-case, ≤ 5 words).
-3. Check the jots directory for an existing jot with a similar slug or covering the same concept. If one exists, ask the user whether to **append** to it (add a line to the description), **supersede** it (replace with today's framing), or **create a new** one alongside. (In auto mode, see below — default to creating a new one silently.)
+3. Check the jots directory for an existing jot with a similar slug or covering the same concept. If one exists, ask the user whether to **append** to it (add a line to the description), **supersede** it (replace with today's framing), or **create a new** one alongside.
 4. Write the file using the absolute path.
-5. Report back in one sentence: the slug, and a one-line confirmation. Do not lecture about the workflow.
-
-## Auto mode
-
-When `auto_stage_mode: auto` is set in the settings file, you are running unattended via the Stop hook and the goal is to capture without slowing the user down. In this mode:
-
-- **Step 1**: If you can't infer a clear subject, abort silently (no jot, no message). Don't ask.
-- **Step 3**: If a similar jot exists, default to creating a **new sibling** entry. Don't prompt. The user will sort it out at review time.
-- **Step 5**: Compress the confirmation to a single line: `(jotted: <slug>)`. Nothing else.
-
-In `prompt` mode the user has opted in to being asked, so the original procedure applies. In `off` mode this skill should not be invoked by a hook at all — it can still be invoked explicitly via `/jot`, in which case behave as `prompt`.
+5. Report back in one short line: the slug and a brief confirmation. Don't lecture about the workflow. For auto-invocations, keep it especially terse — something like `Jotted: <slug>` is plenty.
 
 ## What NOT to do
 
