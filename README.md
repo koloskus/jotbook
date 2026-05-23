@@ -1,6 +1,6 @@
 # jotbook
 
-A Claude Code plugin to help easily create a curated knowledge base from ad-hoc explanations.
+A Claude Code plugin to help easily curate a knowledge base from ad-hoc explanations.
 
 If you are a vibe coder, your agent is almost certainly implementing stuff you don't fully understand. If you are a *responsible* vibe coder, you are asking your agent to explain what it just implemented in detail so you can learn about it. Jotbook is for the responsible vibe coder. 
 
