@@ -32,13 +32,9 @@ Format your jotbook as linked markdown (default), Obsidian vault, or HTML files 
 
 ## Install
 
-Once published to a marketplace:
+Jotbook isn't yet published to a public Claude Code marketplace. This section will be updated when it is.
 
-```
-/plugin install jotbook@<marketplace-name>
-```
-
-Or install manually by cloning into your Claude Code plugins directory.
+In the meantime, you can install jotbook by hosting it through your own **local plugin marketplace** — a directory on your machine with a `.claude-plugin/marketplace.json` file that points at your cloned jotbook directory. Once registered with `/plugin marketplace add <path>`, jotbook installs into any project via `/plugin install jotbook@<your-marketplace-name>`. See Anthropic's [plugin marketplaces docs](https://code.claude.com/docs/en/plugin-marketplaces) for the full setup walkthrough.
 
 ## Quickstart
 
