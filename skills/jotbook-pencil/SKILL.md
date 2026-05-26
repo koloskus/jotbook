@@ -1,6 +1,6 @@
 ---
 name: jotbook-pencil
-description: Pencil one or more jots into a provisional long-form draft for evaluation. Renders the full elaboration without committing — source jot(s) are preserved and cross-links into existing entries are NOT updated. Promotion to a finished entry happens later, via `/jotbook-pencil-review`. Invoked by `/jotbook-pencil <slug>[,<slug>] [--html]` (or `/jot pencil ...`), or as a `pencil` decision inside the `/jotbook-ink` curation flow.
+description: Render one or more jots into a provisional long-form draft (a "pencil") for later evaluation. Source jots are preserved and no cross-links are written — promotion happens later via `/jotbook-pencil-review`.
 ---
 
 # Pencil a jot into a provisional draft

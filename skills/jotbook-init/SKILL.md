@@ -1,6 +1,6 @@
 ---
 name: jotbook-init
-description: Initialize a jotbook in the current project. Writes a starter settings file at `.claude/jotbook.local.md` with sensible defaults, optionally amends `.gitignore` so the settings file isn't committed, and mentions the restart caveat for hook-affecting fields. Invoked by `/jotbook-init` (or `/jot init`), and automatically routed-to by `/jotbook-ink` when the plugin hasn't been initialized in this project yet.
+description: Initialize a jotbook in the current project — writes a starter `.claude/jotbook.local.md` settings file, scaffolds the directory structure, and optionally amends `.gitignore`.
 ---
 
 # Initialize a jotbook

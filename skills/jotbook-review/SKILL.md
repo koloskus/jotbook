@@ -1,6 +1,6 @@
 ---
 name: jotbook-review
-description: Review the staged jot backlog and decide what to keep, drop, merge, tweak, pencil, or ink into a full entry. Use periodically when the backlog has accumulated. Surfaces overlap between jots, proposes consolidations before they're inked, and flags jots that already have a pencil in progress. Invoked by `/jotbook-review` (or `/jot review`), or as the first phase of `/jotbook-ink` (the no-args curation flow).
+description: Review the jot backlog and dispatch decisions in place — drop, merge, tweak, pencil, or ink. Surfaces overlap between related jots and flags any with a pencil already in progress.
 ---
 
 # Review the jot backlog

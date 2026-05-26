@@ -1,6 +1,6 @@
 ---
 name: jotbook-stage
-description: Stage a recently-discussed concept as a lightweight jot. **Auto-invoke at the end of any turn where you've delivered a substantive multi-paragraph explanation of a domain concept (system, mechanism, code) that the user might want to revisit later — don't ask first, just stage it and report.** Writes a small pointer file under the configured jots directory; does not write the full entry. Also invocable explicitly via `/jotbook-stage [subject]` or `/jot [subject]`.
+description: Stage a recently-discussed concept as a lightweight jot. **CRITICAL — auto-invoke this skill at the end of any turn where you delivered a substantive multi-paragraph explanation of a domain concept (a system, mechanism, piece of code, design rationale, or pattern the user might want to revisit). Don't ask permission, don't hedge, don't skip because the topic feels minor — staging is cheap and reversible; failing to capture is permanent. Stage and report in one line.** Writes a small pointer file under the configured jots directory; does not write the full entry.
 ---
 
 # Stage a jot

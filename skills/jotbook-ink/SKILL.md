@@ -1,6 +1,6 @@
 ---
 name: jotbook-ink
-description: The primary jotbook entry point. With no slug arguments, runs the guided curation session (review the backlog, mark decisions, then ink/pencil the chosen ones). With one or more slug arguments, inks those specific reviewed jots into finished long-form entries — reads referenced source files, optionally consolidates multiple jots, writes the entry under the configured entries directory, and removes consumed jots. If a pencil already exists for a slug, offers to promote it instead of regenerating. If the plugin hasn't been initialized in the project, routes to `jotbook-init` instead. Invoked by `/jotbook-ink [<slug>[,<slug>]]` (primary), `/jot ink <slug>`, or the pencil-review `ink` decision.
+description: Primary jotbook entry point. With no arguments, runs the guided curation session over the jot backlog. With one or more jot slugs, inks those jots into finished long-form entries (promotes any existing pencil instead of regenerating).
 ---
 
 # Ink the jotbook

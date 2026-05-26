@@ -1,6 +1,6 @@
 ---
 name: jotbook-pencil-review
-description: Review the pencil backlog and decide what to ink, drop, revise, edit, or keep. Use when pencils have accumulated and you want to evaluate provisional long-form drafts before promoting them. Surfaces age, source jots, and format for each pencil. Invoked by `/jotbook-pencil-review` (or `/jot review pencils`).
+description: Review the pencil backlog and decide which provisional drafts to ink, drop, revise, edit, or keep.
 ---
 
 # Review the pencil backlog
