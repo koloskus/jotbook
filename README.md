@@ -59,7 +59,7 @@ Then, during normal use:
 
 ## Commands
 
-Most operations have **two equivalent invocation forms**: the direct skill alias (`/jotbook-<skill>`) or via the `/jot` toolkit (`/jot <subcommand>`). Both route to the same skills; pick whichever your fingers prefer. See the namespace note below the table for why skills are prefixed with `jotbook-` rather than auto-namespaced under `/jotbook:`.
+Most operations have **two equivalent invocation forms**: the direct skill alias (`/jotbook-<skill>`) or via the `/jot` toolkit (`/jot <subcommand>`). Both route to the same skills; pick whichever your fingers prefer. See the namespace note below the table for why the rest of the skills use the `jotbook-` prefix.
 
 | Command | Purpose |
 |---|---|
@@ -72,7 +72,7 @@ Most operations have **two equivalent invocation forms**: the direct skill alias
 
 Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
 
-> **Note on Claude Code's plugin namespace:** Claude Code's namespacing behavior is asymmetric. Command files in `commands/` are auto-namespaced as `/<plugin>:<command>` (so `jot.md` becomes `/jotbook:jot`). Skill files in `skills/`, however, surface as **bare** slash commands using their literal `name:` field — a skill named `foo` becomes `/foo`, *not* `/jotbook:foo`. That collides with built-in skills like `/init` and `/review` and with skills from other plugins. To dodge collisions, every jotbook skill is manually prefixed: `jotbook-init`, `jotbook-ink`, `jotbook-pencil`, etc. Typing `/jotbook` in your terminal triggers autocomplete listing every `jotbook-*` skill plus `/jotbook:jot`; pick from there.
+> **Note on Claude Code's plugin namespace:** Claude Code skills surface as **bare** slash commands using their literal `name:` field — a skill named `foo` becomes `/foo`, not `/jotbook:foo`. That collides with built-in skills like `/init` and `/review` and with skills from other plugins. To dodge collisions, every jotbook skill except `jot` is manually prefixed: `jotbook-init`, `jotbook-ink`, `jotbook-pencil`, etc. `jot` itself is unique enough that we leave it bare so the toolkit dispatcher (`/jot <subcommand>`) reads naturally. Typing `/jotbook` triggers autocomplete listing every `jotbook-*` skill; `/jot` is its own thing alongside.
 
 ## Pencil drafts
 
