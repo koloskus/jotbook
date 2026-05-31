@@ -1,6 +1,6 @@
 ---
 name: jotbook-pencil
-description: Render one or more jots into a provisional long-form draft (a "pencil") for later evaluation. Source jots are preserved and no cross-links are written — promotion happens later via `/jotbook-pencil-review`.
+description: Render one or more jots — or a fresh subject, which is staged as a jot first — into a provisional long-form draft (a "pencil") for later evaluation. Source jots are preserved and no cross-links are written — promotion happens later via `/jotbook-pencil-review`.
 ---
 
 # Pencil a jot into a provisional draft
@@ -24,7 +24,7 @@ If `pencils_dir` does not exist, create it — but first briefly note to the use
 
 ## Inputs
 
-- One or more jot slugs from the user's invocation (single slug, or comma-separated to consolidate into one pencil).
+- One or more jot slugs from the user's invocation (single slug, or comma-separated to consolidate into one pencil). The argument can also be a **fresh subject** that has no jot yet — see step 2 for how that's handled.
 - Optional `--html` flag (anywhere in the arguments).
 - Files referenced on each jot's `Files:` line.
 - The conversation, if the original explainer is still in context.
@@ -44,7 +44,11 @@ This is a lighter-weight version of the same gate the ink skill enforces — a m
 
 ### 2. Resolve inputs
 
-- Locate the jot file(s) under `jots_dir`. If a slug doesn't match, list what's there and ask the user to clarify — do not guess.
+- Locate the jot file(s) under `jots_dir`. For each argument that **matches** an existing jot, use it directly.
+- When an argument **doesn't** match any existing jot, decide which case you're in:
+  - **Near-miss of an existing jot** (looks like a typo or partial of something already in the backlog) — don't guess. Surface the close match and ask: *"Did you mean `<existing-slug>`, or stage `<arg>` as a new jot?"*
+  - **A genuinely new subject, with material to work from** (the topic was just discussed in conversation, or the user clearly intends a fresh entry) — **stage the jot first, then pencil it.** Invoke the staging behavior from `jotbook-stage` (infer the one-line description and `Files:` line from the most recent explainer, or from the subject phrase the user gave), write the pointer file under `jots_dir`, narrate it in one line (`Jotted: <slug>`), then continue this procedure with that freshly-staged jot as the source. Don't pause for confirmation — staging is cheap and the pencil is the thing the user asked for.
+  - **A new subject with nothing to draft from** (no conversation context, no files, the topic isn't something you can reconstruct) — stop and ask the user for the material rather than inventing it. A pencil built on a hallucinated premise is worse than no pencil.
 - Read each jot's description and `Files:` line.
 - Determine the pencil slug:
   - Single jot: same slug as the jot (without the `YYYY-MM-DD-` date prefix).

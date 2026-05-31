@@ -14,7 +14,7 @@ Parse the user's invocation text immediately after `/jot`. Treat the first white
   - If `pencils`, invoke the `jotbook-pencil-review` skill.
   - Anything else: ask the user to clarify (`jots` or `pencils`).
 - **`ink`** → invoke the `jotbook-ink` skill. Pass the rest of the arguments as the jot slug (or comma-separated slugs).
-- **`pencil`** → invoke the `jotbook-pencil` skill. Pass the rest of the arguments as the jot slug (or comma-separated slugs). Recognize an optional `--html` flag anywhere in the remaining arguments and forward it. If `pencil` is invoked with no slug, do NOT default — instead, tell the user the two valid forms (`/jot pencil <slug>` to draft, `/jot review pencils` to review the pencil backlog) and stop.
+- **`pencil`** → invoke the `jotbook-pencil` skill. Pass the rest of the arguments as the jot slug or subject (single, or comma-separated slugs). The argument need not match an existing jot — `jotbook-pencil` will stage one first when given a fresh subject. Recognize an optional `--html` flag anywhere in the remaining arguments and forward it. If `pencil` is invoked with no argument at all, do NOT default — instead, tell the user the two valid forms (`/jot pencil <slug>` to draft, `/jot review pencils` to review the pencil backlog) and stop.
 - **`init`** → invoke the `jotbook-init` skill. The skill writes the starter settings file and handles the `.gitignore` prompt.
 - **`stage`** → invoke the `jotbook-stage` skill. Pass the rest of the arguments as the subject phrase.
 - **anything else (or empty)** → invoke the `jotbook-stage` skill. Treat the full invocation text as the subject phrase (if empty, the skill infers from recent conversation).

@@ -28,11 +28,7 @@ You can drive each stage by hand with `/jot`, or just run `/jotbook-ink` for a g
 
 ---
 
-By default, when Claude gives you a substantive explainer it'll proactively stage it as a candidate for future codification — briefly noting what it jotted and writing the small pointer file under your jots directory. You review the backlog later and decide which candidates are worth elaborating into full entries.
-
-Review your backlog later, cut what's not relevant, and ink new entries. Inking also updates existing inked entries with new links (if relevant) for all you Obsidian node heads.
-
-Format your jotbook as linked markdown (default), Obsidian vault, or HTML files for added pizzazz.
+Inking isn't just append-only: promoting a new entry also updates existing inked entries with cross-links back to it where relevant, so the jotbook stays connected as it grows. Format it as linked Markdown (default), an Obsidian vault, or templated HTML.
 
 ## Install
 
@@ -71,7 +67,7 @@ Most operations have **two equivalent invocation forms**: the direct skill alias
 | `/jot [subject]` | Stage a jot. With no argument, infers from recent conversation; with an argument, uses it as the subject phrase. Claude also invokes this automatically after substantive explainers, via the skill's auto-trigger description. (Equivalent: `/jotbook-stage`.) |
 | `/jot review` | Inventory the jot backlog, then apply your decisions in place — drop / merge / tweak structurally, or dispatch directly into ink / pencil for marked slugs. No follow-up slash command needed. (Equivalent: `/jotbook-review`.) |
 | `/jot review pencils` | Inventory the pencil backlog and decide what to ink, drop, revise, edit, or keep. (Equivalent: `/jotbook-pencil-review`.) |
-| `/jot pencil <slug>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. (Equivalent: `/jotbook-pencil <slug>`.) |
+| `/jot pencil <slug-or-subject>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Accepts an existing jot slug or a fresh subject — a fresh subject is staged as a jot first, then drafted. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. (Equivalent: `/jotbook-pencil <slug>`.) |
 | `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). (Equivalent: `/jotbook-init`.) |
 
 Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
@@ -88,9 +84,12 @@ Pencils live in their own backlog (`pencils_dir`, default `docs/jotbook/_pencils
 
 ```
 /jot pencil <slug>            # from a jot in your backlog
+/jot pencil <subject>         # from a fresh subject — stages the jot first, then drafts
 /jot pencil <slug-a>,<slug-b> # consolidate multiple jots into one pencil
 /jot pencil <slug> --html     # opt into the HTML template (requires template_path)
 ```
+
+The argument doesn't have to be an existing jot. Hand it a fresh subject — something you just discussed, or a topic you want drafted now — and pencil stages the lightweight jot for you first, then drafts from it, so the pencil still has a real source jot behind it. (If the subject looks like a typo of an existing jot, it'll ask rather than create a duplicate; if there's nothing to draft from, it'll ask for material rather than invent it.)
 
 You can also create a pencil from inside the `/jotbook-ink` flow: `pencil <slug>` is a valid decision alongside `ink`, `drop`, `merge`, `tweak`, and `keep`.
 
@@ -181,7 +180,7 @@ Notion doesn't support file-based writes, so there's no `notion` output mode. Th
 
 ## Auto-staging
 
-There's no separate "auto-stage hook" in the plugin — staging is driven by the `jotbook-stage` skill's description, which tells Claude to invoke the skill at the end of any turn where the last response was a substantive multi-paragraph explainer worth revisiting. Claude does the judgment call in-band: after a real explainer it'll briefly narrate ("Jotted as `cache-eviction-policy`") and you'll see the file land under `jots_dir`. After a short answer, status update, or jotbook-skill output, it won't trigger.
+Staging is driven by the `jotbook-stage` skill's description, which tells Claude to invoke the skill at the end of any turn where the last response was a substantive multi-paragraph explainer worth revisiting. Claude makes the judgment call in-band: after a real explainer it'll briefly narrate ("Jotted as `cache-eviction-policy`") and you'll see the file land under `jots_dir`. After a short answer, status update, or jotbook-skill output, it won't trigger.
 
 If Claude misses something you wanted staged, run `/jot [subject]` explicitly. If Claude stages something you didn't want, `/jot review` (or `/jotbook-review`) lets you drop it in seconds.
 
