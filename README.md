@@ -1,12 +1,12 @@
 # jotbook
 
-A Claude Code plugin to help easily curate a knowledge base from ad-hoc explanations.
+A knowledge base built from the explanations you'd otherwise forget.
 
-If you are a vibe coder, your agent is almost certainly implementing stuff you don't fully understand. If you are a *responsible* vibe coder, you are asking your agent to explain what it just implemented in detail so you can learn about it. Jotbook is for the responsible vibe coder. 
+If you're a vibe coder, your agent is almost certainly shipping code you don't fully understand. If you're a responsible vibe coder, you ask it to explain what it just built so you actually learn something. Jotbook is for the responsible vibe coder.
 
-When Claude gives you a substantive explainer of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to decide if it's worth saving, let alone write it. This plugin gives you a three-stage workflow: **jot** down a quick note to revisit an explainer cheaply in the moment, **review** the backlog periodically for still-relevant explainers, **ink** the survivors into finished entries in your jotbook.
+The problem: The best explanations arrive mid-task, when stopping to save them would derail you, so they evaporate. Jotbook catches them without breaking your flow: **jot** down a cheap pointer in the moment, **review** the backlog later for what's still worth keeping, **ink** the survivors into finished long-form entries.
 
-What makes it powerful is Claude knows to jot when it has explained something to you, so as you build stuff you can rest assured there's a record of what to return to learn from later.
+The trick: Claude stages these jots itself the moment it finishes explaining something. You work, the record writes itself.
 
 ## How it works
 
