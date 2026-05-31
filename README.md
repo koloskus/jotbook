@@ -6,7 +6,11 @@ If you are a vibe coder, your agent is almost certainly implementing stuff you d
 
 When Claude gives you a substantive explainer of something — a system, a concept, a piece of code — you often want to revisit it later as a polished long-form note, but you don't want to interrupt the current work to decide if it's worth saving, let alone write it. This plugin gives you a three-stage workflow: **jot** down a quick note to revisit an explainer cheaply in the moment, **review** the backlog periodically for still-relevant explainers, **ink** the survivors into finished entries in your jotbook.
 
+What makes it powerful is Claude knows to jot when it has explained something to you, so as you build stuff you can rest assured there's a record of what to return to learn from later.
+
 ## How it works
+
+*Want to get a quick sense of how it works? run `/jotbook-pencil how-jotbook-works`*
 
 ```
   ┌──────────┐     ┌──────────┐     ┌──────────┐
