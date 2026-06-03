@@ -1,10 +1,10 @@
 # jotbook
 
-A knowledge base built from the explanations you'd otherwise forget.
+Easily build a knowledge base every time you ask Claude to explain what it built.
 
 If you're a vibe coder, your agent is almost certainly shipping code you don't fully understand. If you're a responsible vibe coder, you ask it to explain what it just built so you actually learn something. Jotbook is for the responsible vibe coder.
 
-The problem: The best explanations arrive mid-task, when stopping to save them would derail you, so they evaporate. Jotbook catches them without breaking your flow: **jot** down a cheap pointer in the moment, **review** the backlog later for what's still worth keeping, **ink** the survivors into finished long-form entries.
+The problem: The best explanations arrive while you're working on something, when stopping to save them would derail you, so they evaporate. Jotbook catches them without breaking your flow: **jot** down a cheap pointer in the moment, **review** the backlog later for what's still worth keeping, **ink** the survivors into finished long-form entries.
 
 The trick: Claude stages these jots itself the moment it finishes explaining something. You work, the record writes itself.
 
