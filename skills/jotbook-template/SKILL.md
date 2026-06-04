@@ -1,6 +1,6 @@
 ---
 name: jotbook-template
-description: Design a templated-HTML output for this jotbook via a judge-panel workflow — produces a stylesheet, tokenized template, preview, and token-conventions doc, verifies them mechanically, and wires output_format/template_path on your sign-off. User-triggered only; never auto-invoke.
+description: Design a templated-HTML output for this jotbook — a full judge-panel workflow or a streamlined quick path, recommended from the project's visual richness — that produces a stylesheet, tokenized template, preview, and token-conventions doc, verifies them mechanically, and wires output_format/template_path on your sign-off. User-triggered only; never auto-invoke.
 ---
 
 # Design a jotbook HTML template
@@ -10,11 +10,18 @@ The `html` output mode needs a real template before it works. The two gates diff
 - `jotbook-ink` hard-stops when `output_format: html` is set but `template_path` is empty or points at a missing file.
 - `jotbook-pencil` hard-stops when `--html` is passed but `template_path` is empty or missing — independent of `output_format`.
 
-This skill runs a judge-panel design workflow that produces a stylesheet, a tokenized template, a populated preview, and token-conventions documentation tailored to *this* project, verifies them mechanically, and — only after you sign off — wires the settings so the HTML path is armed.
+This skill produces a stylesheet, a tokenized template, a populated preview, and token-conventions documentation tailored to *this* project, verifies them mechanically, and — only after you sign off — wires the settings so the HTML path is armed.
 
-**User-triggered only.** This skill mutates config and runs a heavy multi-agent design panel; never auto-invoke it. It runs only in response to an explicit `/jotbook-template` (or `/jot template`) invocation.
+It offers **two design paths**, recommended from the project's visual richness (step 1) but always the user's choice:
 
-The workflow's shape is the whole point, so preserve its intent, not just its steps:
+- **Full panel** — the judge-panel workflow below. Worth it when the project has a real visual language and tone to harmonize with, so distinct directions can actually separate.
+- **Quick path** — a single opinionated design pass (or a baseline preset). Right for greenfield/utilitarian projects, or when the user just wants a clean, blog-like template without the exercise.
+
+**The fork lives only in the design phase.** Both paths build the same fixed sample, write the same four artifacts, run the same mechanical verification, and hit the same sign-off gate. Quick is not lower-rigor output — it just skips exploring a design space that may have no room to be explored.
+
+**User-triggered only.** This skill mutates config and (on the full path) runs a heavy multi-agent design panel; never auto-invoke it. It runs only in response to an explicit `/jotbook-template` (or `/jot template`) invocation.
+
+The full panel's shape is the whole point, so when you take it, preserve its intent, not just its steps:
 
 - **A fixed sample entry, held constant across all concepts**, so designs are compared on craft, not copy.
 - **Distinct, hard-committed directions** beat one hedged attempt.
@@ -47,6 +54,7 @@ Derive these from `entries_dir` (do not hardcode):
 - The current project, for visual-context discovery (existing CSS/templates, brand sources, the house-style body).
 - The jot/pencil backlog, for reconstructing the fixed sample from real content.
 - Optional pre-run steer from the user (an existing doc look to harmonize with, a request for a distinct identity, or "let the panel explore"). This is a steer, never a gate.
+- Optional path intent — a `--quick` or `--full` flag, or plain-language intent in the steer ("just something simple/blog-like" → quick; "make it expressive / give me options" → full). When present, intent overrides the richness recommendation in either direction.
 - The user, for the one mandatory sign-off before any config change.
 
 ## Procedure
@@ -60,6 +68,14 @@ Before generating anything, run a fixed discovery sweep and assemble a CONTEXT b
 3. **House style.** The body of `.claude/jotbook.local.md` is authoritative for voice/tone/terminology — feed it verbatim to the agents.
 4. **Synthesize a HARMONIZE-OR-DIVERGE brief.** A small extracted palette (hex list), a type stack (noting whether the faces are Google-Fonts-available or already self-hosted), spacing/rhythm notes, and motif candidates. The rule for agents: the result must feel like it belongs to THIS project and never a generic framework/AI default, but the jotbook is a more personal, intimate document class than any public docs it sits beside.
 5. **Greenfield fallback.** If no visual context exists at all, fall back to a neutral-but-opinionated editorial baseline — a restrained warm-paper-or-cool-slate palette chosen from the project domain, a tasteful Google-Fonts serif+mono pairing — and instruct agents to establish identity from the project's DOMAIN rather than inventing arbitrary branding. Record that no house palette was found so the synthesis doc can flag the chosen palette as net-new.
+6. **Read the richness signal (for the path recommendation).** Discovery already surfaces everything this needs — don't run a second pass; just read what 1–5 found. The full panel only produces meaningful signal when there's enough divergence space for distinct directions to separate; on a bare project the four archetypes collapse toward the same baseline and the panel mostly burns effort to rediscover it. Count these "leans-full" signals:
+   - a design-token file or theme config is present (`tokens.json`, `tailwind.config.*`, a real `:root{}` palette, SCSS `$vars`);
+   - ≥2 distinct stylesheets, or a sibling doc/site system to harmonize-or-diverge against (the field-manual case);
+   - a tone/voice/lore source exists — `BRAND*`/`STYLE*`/worldbuilding/design docs, or a populated house-style body in `.claude/jotbook.local.md`;
+   - the project domain is expressive (game, creative tool, narrative product) rather than utilitarian (infra, library, CLI);
+   - ≥1 content-rich real jot/pencil exists to reconstruct the fixed sample from.
+
+   Form a recommendation, not a verdict: **greenfield fallback fired (no visual context at all) → recommend quick; ≥3 leans-full signals → recommend full; otherwise → no strong lean, surface what was found and let the user pick.** Record the lean and the one-line evidence for step 3. This is only a recommendation — explicit path intent (step 3) overrides it in either direction.
 
 ### 2. Build the fixed sample entry (the experiment's control)
 
@@ -74,11 +90,31 @@ Produce ONE content-complete sample, frozen as a string, passed identically to e
 
 Either way the sample MUST stress every supported element so concepts compare fairly and nothing renders untested: title; a 1-2 sentence standfirst/lede; created date (`YYYY-MM-DD`); 3-6 topic tags (chips); slug; a STATUS rendered in the INKED state (with an HTML comment describing how the PENCIL state differs); 3-6 body sections, at least one with an h3 sub-section; a NOTE callout and a WARN callout; one short code/monospace block (≤ ~20 lines, terminal/source styled); a small table (header + ~3 rows); one inline SVG diagram + a `<p class="caption">`; an inline `<code>` span; an inline cross-link to another entry (`<slug>.html`); and a trailing Sources footer.
 
-### 3. Optional pre-run direction steer
+### 3. Choose the path (quick vs full), and optionally take a steer
 
-You MAY offer the user a steer before spinning up the panel — e.g. "share an existing doc look / give the jotbook a distinct identity / let the panel explore freely." The user is free to decline and delegate. If declined or unanswered, default to letting the panel explore the full default direction set. Never block on this.
+Resolve which design path to run BEFORE generating anything. Order of precedence: **explicit intent → richness recommendation → default toward quick.**
 
-### 4. Run the design workflow (Design → Judge → Synthesize)
+1. **Explicit intent wins.** If the invocation carried a `--quick` or `--full` flag, or plain-language intent ("just something simple/blog-like" → quick; "make it expressive / give me options" → full), honor it and skip the question. Intent overrides the step-1 recommendation in either direction (e.g. a rich game repo whose owner just wants a plain blog look → quick).
+2. **Otherwise, recommend from the richness signal and ask once.** Surface the step-1 lean with its one-line evidence and let the user pick — e.g. "I found a design-token file and a tone doc, so the **full panel** will pay off here (≈9 design/judge passes). Or I can run the **quick path** — one clean pass, same verification and sign-off. Which would you like?" When there's no strong lean, present both evenly. Keep it to one lightweight question; don't lecture.
+3. **Default toward quick when unanswered.** If the user declines to choose or doesn't respond, default to **quick** — it's the cheap, safe option, and upgrading is a trivial re-run (the artifacts are inert and just get overwritten), whereas a needless panel is the expensive spend. The one exception: if intent or the recommendation already clearly pointed to full, honor that.
+
+If the chosen path is **full**, you MAY also take a direction steer here ("share an existing doc look / give the jotbook a distinct identity / let the panel explore freely"); if declined, let the panel explore the full default direction set. The quick path takes the same steer as a single hint. Never block on any of this.
+
+### 4. Run the chosen design path
+
+Two paths produce the synthesis output that step 5 writes. Both consume the same CONTEXT (step 1) and the same fixed SAMPLE (step 2), and both hand off to the identical steps 5–8. Run the one chosen in step 3.
+
+#### 4-QUICK. Quick path — one opinionated pass
+
+Skip the panel entirely. Produce the four artifacts in a single design pass tailored to the discovered (or baseline) palette/type/motifs:
+
+- **Pick the look.** Use the discovered visual language if step 1 found one; otherwise choose a baseline editorial preset appropriate to the project domain — a restrained `warm-paper`, `cool-slate`, or `plain-blog` look. State which you used. A clean, legible, blog-like dev notebook is the target — distinctive enough to not read as a generic AI default, but no in-world theming, marginalia, or console atmosphere.
+- **Generate once.** Either inline, or as a single subagent if a Task/subagent tool exists — render the fixed SAMPLE in the INKED state and produce the same synthesis output shape as the full path: `css`, `templateHtml`, `previewHtml`, `tokenConventions` (the `SYNTH_SCHEMA` in the appendix). The CSS must carry the full structural class set and the `.leaf.inked` / `.leaf.pencil` pure-class-swap treatment exactly as the full path requires — the quick path simplifies the *exploration*, not the *output contract*.
+- **No directions, no judges, no synthesis-from-panel.** There is nothing to tally; go straight to step 5.
+
+Then continue to step 5 (write), 6 (verify), 7 (sign-off), 8 (wire) unchanged. State in the final report that the quick path was taken and which look was used.
+
+#### 4-FULL. Full panel — Design → Judge → Synthesize
 
 The workflow is **Design → Judge → Synthesize**, described below as a procedure you execute in this conversation. There are two execution modes; pick based on a concrete capability check.
 
@@ -150,7 +186,9 @@ This is what arms the HTML path in `jotbook-ink`/`jotbook-pencil`. Until it's do
 ## Hard rules
 
 - **Never flip settings without explicit sign-off.** Writing the artifacts to disk is safe (they're inert); changing `output_format`/`template_path` is the one action that arms the HTML gate for every future ink and pencil. Mirror `jotbook-init`'s "don't auto-chain" discipline.
-- **User-triggered only; never auto-invoke.** This skill mutates config and runs a heavy panel — it runs only on an explicit `/jotbook-template` (or `/jot template`).
+- **User-triggered only; never auto-invoke.** This skill mutates config and (on the full path) runs a heavy panel — it runs only on an explicit `/jotbook-template` (or `/jot template`).
+- **The quick/full fork is the design phase only.** Both paths build the same fixed sample, emit the same four artifacts under the same output contract (including the `.leaf.inked`/`.leaf.pencil` class swap), run the same step-6 verification, and hit the same step-7 sign-off gate. Quick simplifies exploration, never output rigor or safety.
+- **Recommend the path from richness; never force it.** Default toward quick when intent is absent and there's no strong lean — upgrading quick→full is a cheap re-run, while a needless panel is the expensive spend. Explicit user intent always wins.
 - **The template links an external sheet — never inline CSS.** The produced template is judged against `jotbook-ink`'s rule: "Don't paste CSS inline in HTML output when the template already links a stylesheet." The only presentational exception is geometry attributes on the SVG diagram.
 - **Hold the fixed sample constant across all concepts.** Same text, same structure, in every design agent, the judge context, and the preview. Designs are compared on craft, not copy.
 - **Discover the project's visual language; don't bake one in.** No hardcoded palette/fonts/domain. Harmonize with existing brand/docs where they exist, but never clone a sibling document class, and never resolve to a generic framework/AI default.

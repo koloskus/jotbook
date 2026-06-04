@@ -69,7 +69,7 @@ Most operations have **two equivalent invocation forms**: the direct skill alias
 | `/jot review pencils` | Inventory the pencil backlog and decide what to ink, drop, revise, edit, or keep. (Equivalent: `/jotbook-pencil-review`.) |
 | `/jot pencil <slug-or-subject>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Accepts an existing jot slug or a fresh subject — a fresh subject is staged as a jot first, then drafted. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. (Equivalent: `/jotbook-pencil <slug>`.) |
 | `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). (Equivalent: `/jotbook-init`.) |
-| `/jotbook-template` | Design a templated-HTML output for this jotbook (stylesheet + tokenized template + preview + token-conventions), verify it, and wire `output_format`/`template_path` on your sign-off. User-triggered only. (Equivalent: `/jot template`.) |
+| `/jotbook-template` | Design a templated-HTML output for this jotbook (stylesheet + tokenized template + preview + token-conventions), verify it, and wire `output_format`/`template_path` on your sign-off. Recommends a **full** judge-panel design or a **quick** single-pass template based on your project's visual richness; pass `--full`/`--quick` to choose. User-triggered only. (Equivalent: `/jot template`.) |
 
 Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`, `template`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
 
