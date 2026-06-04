@@ -69,8 +69,9 @@ Most operations have **two equivalent invocation forms**: the direct skill alias
 | `/jot review pencils` | Inventory the pencil backlog and decide what to ink, drop, revise, edit, or keep. (Equivalent: `/jotbook-pencil-review`.) |
 | `/jot pencil <slug-or-subject>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Accepts an existing jot slug or a fresh subject — a fresh subject is staged as a jot first, then drafted. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. (Equivalent: `/jotbook-pencil <slug>`.) |
 | `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). (Equivalent: `/jotbook-init`.) |
+| `/jotbook-template` | Design a templated-HTML output for this jotbook (stylesheet + tokenized template + preview + token-conventions), verify it, and wire `output_format`/`template_path` on your sign-off. User-triggered only. (Equivalent: `/jot template`.) |
 
-Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
+Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`, `template`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
 
 > **Note on Claude Code's plugin namespace:** Claude Code skills surface as **bare** slash commands using their literal `name:` field — a skill named `foo` becomes `/foo`, not `/jotbook:foo`. That collides with built-in skills like `/init` and `/review` and with skills from other plugins. To dodge collisions, every jotbook skill except `jot` is manually prefixed: `jotbook-init`, `jotbook-ink`, `jotbook-pencil`, etc. `jot` itself is unique enough that we leave it bare so the toolkit dispatcher (`/jot <subcommand>`) reads naturally. Typing `/jotbook` triggers autocomplete listing every `jotbook-*` skill; `/jot` is its own thing alongside.
 
@@ -172,7 +173,7 @@ Point `entries_dir` at a folder inside your vault and entries appear there direc
 
 Template-driven HTML for users who want a styled long-form output (zines, field manuals, internal wikis, etc.). Requires `template_path` to point at a real HTML file containing `{{PLACEHOLDER}}` tokens for the title, standfirst, sections, etc. `jotbook-ink` will refuse to invent a template — building one is a separate, deliberate design task.
 
-If you'd like to build an HTML template for this mode, start a fresh conversation and ask Claude to help design one; then point `template_path` at it.
+If you'd like to build an HTML template for this mode, run `/jotbook-template` (or `/jot template`) — a guided design workflow that produces the stylesheet, a tokenized template, a preview, and house-style token docs, then wires `template_path` for you on sign-off.
 
 ### Notion
 
@@ -202,6 +203,7 @@ The SessionStart hook is loaded when Claude Code starts. Editing `backlog_thresh
 | Tell Claude to stop auto-staging | Add to project `CLAUDE.md`: "Do not invoke jotbook-stage automatically." |
 | Ink into an Obsidian vault | `output_format: obsidian` + `entries_dir: <vault-folder>` |
 | Use a custom HTML template | `output_format: html` + `template_path: <path>` |
+| Generate an HTML template | `/jotbook-template` (then it sets `output_format: html` + `template_path` on sign-off) |
 | Draft a specific pencil with the HTML template | `/jot pencil <slug> --html` (requires `template_path`) |
 | Change where jots live | `jots_dir: <path>` |
 | Change where pencils live | `pencils_dir: <path>` |

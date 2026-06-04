@@ -82,6 +82,7 @@ Leave the `template_path` field empty by default. The user fills it in only when
    - Point at `/jot` for staging an explainer after a relevant turn.
    - Point at `/jotbook-ink` for the curation flow once the backlog has grown.
    - Mention `.claude/jotbook.local.md` is the place to edit defaults.
+   - If they want HTML output later: `/jotbook-template` runs a guided design workflow and, on their sign-off, wires `template_path` for them.
 
 ## Hard rules
 

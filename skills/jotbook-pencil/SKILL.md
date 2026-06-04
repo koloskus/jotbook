@@ -38,7 +38,7 @@ If `pencils_dir` does not exist, create it — but first briefly note to the use
 - Parse the remaining slug(s) (single, or comma-separated).
 - If `--html` was set, verify `template_path` is set in settings and points to a real file. If not, stop and tell the user:
 
-> "I can't pencil this in HTML — `template_path` isn't set (or points to a missing file). Either set up the template first, or re-run as `/jot pencil <slug>` (without `--html`) for a Markdown pencil."
+> "I can't pencil this in HTML — `template_path` isn't set (or points to a missing file). Either run `/jotbook-template` (or `/jot template`) to set up the template first, or re-run as `/jot pencil <slug>` (without `--html`) for a Markdown pencil."
 
 This is a lighter-weight version of the same gate the ink skill enforces — a missing template is recoverable here because Markdown is always available as a fallback.
 
