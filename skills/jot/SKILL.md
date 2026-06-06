@@ -16,10 +16,11 @@ Parse the user's invocation text immediately after `/jot`. Treat the first white
 - **`ink`** → invoke the `jotbook-ink` skill. Pass the rest of the arguments as the jot slug (or comma-separated slugs).
 - **`pencil`** → invoke the `jotbook-pencil` skill. Pass the rest of the arguments as the jot slug or subject (single, or comma-separated slugs). The argument need not match an existing jot — `jotbook-pencil` will stage one first when given a fresh subject. Recognize an optional `--html` flag anywhere in the remaining arguments and forward it. If `pencil` is invoked with no argument at all, do NOT default — instead, tell the user the two valid forms (`/jot pencil <slug>` to draft, `/jot review pencils` to review the pencil backlog) and stop.
 - **`init`** → invoke the `jotbook-init` skill. The skill writes the starter settings file and handles the `.gitignore` prompt.
+- **`template`** → invoke the `jotbook-template` skill. Forward any remaining text as the optional pre-run direction steer (e.g. an existing doc look to harmonize with, or a request for a distinct identity), including an optional `--quick` or `--full` flag selecting the design path; the skill treats the steer as a hint, never a gate, and runs the same way with no argument.
 - **`stage`** → invoke the `jotbook-stage` skill. Pass the rest of the arguments as the subject phrase.
 - **anything else (or empty)** → invoke the `jotbook-stage` skill. Treat the full invocation text as the subject phrase (if empty, the skill infers from recent conversation).
 
-Reserved subcommand words: `review`, `ink`, `pencil`, `init`, `stage`. If the user wants to stage a jot whose subject starts with one of these words, they should use the explicit `/jot stage <subject>` form.
+Reserved subcommand words: `review`, `ink`, `pencil`, `init`, `stage`, `template`. If the user wants to stage a jot whose subject starts with one of these words, they should use the explicit `/jot stage <subject>` form.
 
 ## Settings
 

@@ -55,9 +55,9 @@ The **body** of the settings file (everything after the closing `---`) is option
 
 If `output_format: html` is set but `template_path` is empty or points to a missing file, stop. Do **not** invent a template inside this flow. Instead, surface the situation clearly to the user — something along the lines of:
 
-> "I can't ink this entry — `output_format` is `html` but `template_path` isn't set (or points to a missing file). Two ways forward: (1) switch `output_format` to `markdown` in your settings and re-run, or (2) start a separate conversation to design the HTML template — Claude can help you build one, but it's a substantial design task that shouldn't happen inside the `/jot ink` flow. Once the template exists, point `template_path` at it and re-run."
+> "I can't ink this entry — `output_format` is `html` but `template_path` isn't set (or points to a missing file). Two ways forward: (1) switch `output_format` to `markdown` in your settings and re-run, or (2) run `/jotbook-template` (or `/jot template`) to design the HTML template — a guided design workflow that builds the template, verifies it, and (on your sign-off) wires `template_path` for you. Once the template exists, re-run."
 
-Then stop. The point is to make the template a deliberate, named artifact rather than something improvised mid-ink.
+Then stop — the template is a deliberate, named artifact, and `/jotbook-template` is where it gets built.
 
 (One exception: if a pencil already exists in HTML format for the requested slug and the user opts to promote it, the template gate doesn't apply — the template work happened at pencil time. The pencil's HTML is the source of truth.)
 
