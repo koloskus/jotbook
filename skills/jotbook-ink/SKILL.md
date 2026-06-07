@@ -86,8 +86,8 @@ If a pencil exists for any of the requested slugs, surface this and ask:
 
 For multi-slug invocations where some have pencils and some don't, ask per-slug or ask once how to handle the batch.
 
-- **Promote** → follow the **Promotion path** below (steps 3a → 5 → 6). Skip the **Fresh render path**.
-- **Regenerate fresh** → follow the **Fresh render path** below (steps 3b → 4 → 5 → 6). At cleanup time, ask once whether to delete the now-stale pencil (default: delete).
+- **Promote** → follow the **Promotion path** below (steps 3a → 5 → 8). Skip the **Fresh render path**.
+- **Regenerate fresh** → follow the **Fresh render path** below (steps 3b → 4 → 5 → 8). At cleanup time, ask once whether to delete the now-stale pencil (default: delete).
 
 If no pencil exists, follow the **Fresh render path** with no branching.
 
@@ -110,7 +110,7 @@ If no pencil exists, follow the **Fresh render path** with no branching.
 
     Default to **keep as HTML** if the user doesn't pick. If they pick downcast: extract the readable content from the HTML body, convert to Markdown (preserve semantic structure where possible — headings, lists, code blocks, links; flatten interactive/visual elements to descriptive text or alt text), and write to `<entries_dir>/<slug>.md` with frontmatter appropriate for the global format (Obsidian's frontmatter for `obsidian`, none for plain `markdown`). Mention the downcast in your final report so the user knows what happened.
 
-Then jump to step 5 (Update related entries) and step 6 (Clean up).
+Then continue with step 5 (add navigation) through step 8 (regenerate the index).
 
 ### 3b. Fresh render path — gather material
 
@@ -195,15 +195,35 @@ When `output_format: html` and `template_path` is set:
 1. Read the template at `template_path`.
 2. Replace any `{{PLACEHOLDER}}` tokens it contains using the planned title, standfirst, sections, etc. Match the template's conventions (numbering schemes, masthead fields, colophon) — do not invent your own.
 3. **Never paste CSS inline** if the template links a stylesheet. Use the existing `<link>` reference.
-4. Honor any conventions documented in the house-style body of the settings file (e.g., issue numbering, system numbering, phase tags).
+4. **Strip the template's guiding HTML comments** from the finished entry. The `<!-- ... -->` notes (section pattern, delete-if-unused hints, token explanations) are authoring scaffolding — a published entry should not carry them. Remove every guiding comment after filling the tokens.
+5. Honor any conventions documented in the house-style body of the settings file (e.g., issue numbering, system numbering, phase tags).
 
-### 5. Update related entries
+### 5. Add back-nav and a Contents TOC to the entry
+
+(Both paths execute this step, on the entry just written to `entries_dir`.)
+
+Every inked entry gets a link back to the jotbook index, so the collection is navigable from any entry. Longer entries also get a Contents list of their own sections.
+
+- **Back-to-index link** — add a small link to the index at the top of the entry body, just above the `# Title`. If the file opens with YAML frontmatter, the link goes **below the closing `---`**, never above it — frontmatter must stay at line 1 or the parser (Obsidian especially) won't recognize it.
+  - **Markdown**: prepend `[← Index](index.md)` as the first line (plain Markdown has no frontmatter), above the `# Title`.
+  - **Obsidian**: place `[[index|← Index]]` immediately **below the frontmatter block**, above the `# Title` — not as line 1.
+  - **HTML**: fill the template's `{{NAV}}` token with `<a href="index.html">← Index</a>`. The index lives in `entries_dir` alongside entries, so the relative href resolves. (HTML pencils are not indexed — `jotbook-pencil` leaves `{{NAV}}` empty.)
+- **Contents TOC (only when it earns its place)** — if the entry has **3 or more top-level sections** (the section list you planned in step 4), add a Contents list just below the standfirst; otherwise omit it entirely — a short or two-section entry doesn't need the boilerplate.
+  - **Markdown**: a `**Contents**` line followed by `- [Section title](#section-anchor)` items. GitHub derives the anchor from the `##` heading text (lowercased, spaces → hyphens, punctuation dropped) — match that.
+  - **Obsidian**: `- [[#Section title]]` within-note heading links.
+  - **HTML**: fill the `{{TOC}}` token with the anchor list and give each rendered `<section>` (or its `<h2>`) the matching `id` so the links resolve. Below the threshold, leave `{{TOC}}` empty.
+
+When **promoting an already-rendered HTML pencil** (step 3a), the template tokens are already substituted, so there are no `{{NAV}}`/`{{TOC}}` placeholders to fill — insert the back-to-index anchor (and, if ≥3 sections, the Contents list + section `id`s) directly into the masthead/body instead.
+
+### 6. Update related entries
 
 (Both paths execute this step.)
 
-If this entry deserves to be linked **from** an existing entry, add a link from the appropriate place in that entry. Confirm with the user before editing a previously-inked entry.
+If this entry is topically related to an existing entry, cross-link them: add a link from the appropriate place in the related entry to this one (and, where it reads naturally, from this one back). Confirm with the user before editing a previously-inked entry.
 
-### 6. Clean up
+This is the at-ink-time pass over obviously-related entries. To re-examine the whole collection for missing links later — including linking older entries to entries inked after them — run `/jotbook-link` (or `/jot link`), the dedicated cross-link sweep.
+
+### 7. Clean up
 
 (Both paths execute this step.)
 
@@ -211,6 +231,23 @@ If this entry deserves to be linked **from** an existing entry, add a link from 
 - If you took the **Promotion path**: also delete the pencil file from `pencils_dir`.
 - If you took the **Fresh render path** AND a pencil existed for the slug (which the user opted not to promote): ask once whether to delete the now-stale pencil. Default to delete.
 - Show the user the path of the new entry and any entries you edited for cross-links.
+
+### 8. Regenerate the jotbook index
+
+(Both paths execute this step.)
+
+The index is the jotbook's landing page and table of contents. Rebuild it from scratch on every ink so it never drifts from what's on disk — do **not** append incrementally.
+
+1. Glob `entries_dir` for entry files (`*.md` for `markdown`/`obsidian`, `*.html` for `html`). **Exclude** the index file itself (`index.md`/`index.html`) and anything under the `_jots`/`_pencils`/`_assets`/`_templates` subdirectories.
+2. For each entry, read its title and date:
+   - **Markdown**: title = first `# ` heading; date = file mtime (plain Markdown carries no date field).
+   - **Obsidian**: title = first `# ` heading; date = `created:` frontmatter; tags = `tags:` frontmatter.
+   - **HTML**: title = `<title>` or masthead `<h1>`; date = the rendered date if the template surfaces one.
+3. Write `<entries_dir>/index.<ext>`, listing entries **reverse-chronological** (newest first):
+   - **markdown** `index.md`: a `# Jotbook` heading and a `- [Title](slug.md)` list.
+   - **obsidian** `index.md`: a `# Jotbook` MOC using `- [[slug|Title]]` wikilinks; group entries under `## <tag>` headings when the tags form natural clusters, otherwise a flat list.
+   - **html** `index.html`: a document that LINKS `_assets/jotbook.css` (the index sits in `entries_dir` alongside entries, so the href resolves), with the masthead and a styled `<ul>` of entries. Use the index/landing classes the template's stylesheet defines — never inline CSS.
+4. Report the index path alongside the new entry.
 
 ## Format precedence (promotion only)
 
@@ -239,3 +276,6 @@ The fresh render path always uses `output_format` — this table only applies wh
 - **Don't paste CSS inline** in HTML output when the template already links a stylesheet.
 - **Don't promote a pencil without confirmation.** If a pencil exists, ask before taking the promotion path.
 - **Don't delete a pencil silently on the fresh path.** When the user chose to regenerate, confirm once before removing the stale pencil.
+- **Regenerate the index after every ink.** Rebuild `index.<ext>` from the entries on disk (step 8) so the landing page never drifts. Exclude the index file and the `_jots`/`_pencils`/`_assets`/`_templates` subdirs from the listing.
+- **A back-to-index link belongs on entries, not pencils.** The index lives in `entries_dir`; an HTML pencil sits one directory deeper and isn't indexed, so its `{{NAV}}` stays empty — never emit a depth-unsafe back-link from a pencil.
+- **The Contents TOC is conditional.** Add it only when the entry has ≥3 top-level sections; never clutter a short entry with one.

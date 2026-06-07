@@ -81,6 +81,7 @@ Leave the `template_path` field empty by default. The user fills it in only when
    - Confirm what was written and which directories were scaffolded.
    - Point at `/jot` for staging an explainer after a relevant turn.
    - Point at `/jotbook-ink` for the curation flow once the backlog has grown.
+   - Mention that inking builds a navigable `index.md` landing page in `entries_dir` and a back-to-index link on each entry, and that `/jotbook-link` (or `/jot link`) re-links related entries across the collection.
    - Mention `.claude/jotbook.local.md` is the place to edit defaults.
    - If they want HTML output later: `/jotbook-template` runs a guided design workflow and, on their sign-off, wires `template_path` for them.
 

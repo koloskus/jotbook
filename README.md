@@ -28,7 +28,7 @@ You can drive each stage by hand with `/jot`, or just run `/jotbook-ink` for a g
 
 ---
 
-Inking isn't just append-only: promoting a new entry also updates existing inked entries with cross-links back to it where relevant, so the jotbook stays connected as it grows. Format it as linked Markdown (default), an Obsidian vault, or templated HTML.
+Inking isn't just append-only. Every ink rebuilds a navigable index (`index.md`, or `index.html` in HTML mode) and gives each entry a link back to it, so the jotbook reads as a connected whole instead of a folder of files. Promoting a new entry also cross-links it into related existing entries, and `/jotbook-link` sweeps the whole collection on demand to connect older entries to ones inked after them. Format it as linked Markdown (default), an Obsidian vault, or templated HTML.
 
 ## Install
 
@@ -69,9 +69,10 @@ Most operations have **two equivalent invocation forms**: the direct skill alias
 | `/jot review pencils` | Inventory the pencil backlog and decide what to ink, drop, revise, edit, or keep. (Equivalent: `/jotbook-pencil-review`.) |
 | `/jot pencil <slug-or-subject>[,<slug>] [--html]` | Pencil a jot (or several) into a provisional long-form draft for later evaluation. Accepts an existing jot slug or a fresh subject — a fresh subject is staged as a jot first, then drafted. Default format is Markdown; `--html` opts into the HTML template (requires `template_path`). Source jot(s) are preserved. (Equivalent: `/jotbook-pencil <slug>`.) |
 | `/jot init` | Write the starter settings file (and optionally amend your `.gitignore`). (Equivalent: `/jotbook-init`.) |
+| `/jotbook-link [<slug>]` | Cross-link sweep over the inked jotbook. Walks the entries, surfaces topically related pairs that aren't yet linked, and — on your confirmation — adds the links. Use it to connect older entries to ones inked after them. Pass a slug to focus on one entry's connections. User-triggered only. (Equivalent: `/jot link`.) |
 | `/jotbook-template` | Design a templated-HTML output for this jotbook (stylesheet + tokenized template + preview + token-conventions), verify it, and wire `output_format`/`template_path` on your sign-off. Recommends a **full** judge-panel design or a **quick** single-pass template based on your project's visual richness; pass `--full`/`--quick` to choose. User-triggered only. (Equivalent: `/jot template`.) |
 
-Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`, `template`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
+Reserved words after `/jot` (`review`, `ink`, `pencil`, `init`, `stage`, `template`, `link`) are interpreted as subcommands. If you want to jot a subject that starts with one of those words, use `/jot stage <subject>`.
 
 > **Note on Claude Code's plugin namespace:** Claude Code skills surface as **bare** slash commands using their literal `name:` field — a skill named `foo` becomes `/foo`, not `/jotbook:foo`. That collides with built-in skills like `/init` and `/review` and with skills from other plugins. To dodge collisions, every jotbook skill except `jot` is manually prefixed: `jotbook-init`, `jotbook-ink`, `jotbook-pencil`, etc. `jot` itself is unique enough that we leave it bare so the toolkit dispatcher (`/jot <subcommand>`) reads naturally. Typing `/jotbook` triggers autocomplete listing every `jotbook-*` skill; `/jot` is its own thing alongside.
 
@@ -117,6 +118,15 @@ Format conversion at ink time is **asymmetric** — going up in fidelity is auto
 - **Markdown pencil → any `output_format`** — converts to match. A Markdown pencil promoted into an HTML jotbook is rendered through your template; the inked entry is the finalized form of the draft.
 - **HTML pencil → Markdown/Obsidian `output_format`** — kept as `.html` by default. Choosing HTML at draft time was deliberate (you wanted the SVG, the interactive sketch, the richer layout), so the inked entry stays HTML even though your global format is Markdown. The promotion prompt offers an explicit downcast if you actually do want it flattened to Markdown — it's lossy (diagrams become alt text, complex layouts flatten), so it stays opt-in.
 - **HTML pencil → HTML `output_format`** — promotes directly. Any ink-time template finalization (e.g., masthead "draft" → "published") applies.
+
+## Navigation
+
+A jotbook should be readable as a whole, not a folder you open one file at a time. Inking keeps it navigable:
+
+- **An index / landing page.** Every ink rebuilds `index.md` (or `index.html` in HTML mode) in `entries_dir` from the entries on disk — a reverse-chronological table of contents linking every entry. It's regenerated from scratch each time, so it never drifts from what's actually there. In HTML mode it's the styled landing page (served as the directory default); in Obsidian it's a MOC of `[[wikilinks]]`; in plain Markdown it's an `index.md` you open or link to as the jotbook's front door.
+- **Back-to-index on every entry.** Each entry opens with a small link back to the index, so you can move between an entry and the collection from anywhere.
+- **A within-entry Contents list.** Entries long enough to warrant it (three or more sections) get a Contents block linking their own sections. Short entries stay clean — no boilerplate.
+- **Cross-links, two ways.** Inking a new entry links it into obviously-related existing entries automatically. To reconnect the whole collection later — including linking older entries to ones inked after them — run `/jotbook-link` (or `/jot link`): it surfaces related-but-unlinked pairs and adds the links on your confirmation. It only ever adds links; it never rewrites your prose, and it always asks before editing an existing entry.
 
 ## Settings
 
@@ -205,6 +215,7 @@ The SessionStart hook is loaded when Claude Code starts. Editing `backlog_thresh
 | Use a custom HTML template | `output_format: html` + `template_path: <path>` |
 | Generate an HTML template | `/jotbook-template` (then it sets `output_format: html` + `template_path` on sign-off) |
 | Draft a specific pencil with the HTML template | `/jot pencil <slug> --html` (requires `template_path`) |
+| Re-link related entries across the jotbook | `/jotbook-link` (or `/jot link`) |
 | Change where jots live | `jots_dir: <path>` |
 | Change where pencils live | `pencils_dir: <path>` |
 | Move the jot backlog nudge threshold | `backlog_threshold: <n>` |

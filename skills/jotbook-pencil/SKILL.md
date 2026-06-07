@@ -127,6 +127,8 @@ No trailing `*Sources:*` line in the body — that's an ink-time concern. The fr
 
 Read the template at `template_path` and replace any `{{PLACEHOLDER}}` tokens using the planned title, standfirst, sections, etc. Match the template's conventions (numbering schemes, masthead fields, colophon) — do not invent your own. **Never paste CSS inline** if the template links a stylesheet.
 
+Leave the template's `{{NAV}}` and `{{TOC}}` tokens **empty** in a pencil: pencils live one directory deeper than entries and aren't in the index, so a back-to-index link would be a dangling path, and the Contents TOC is an inked-entry nicety. **Strip the template's guiding HTML comments** (section pattern, delete-if-unused hints, token notes) from the rendered pencil — but keep the pencil's own metadata comment described below.
+
 Pencil metadata travels in an HTML comment at the very top of the file, so it doesn't render in browsers but survives round-trips:
 
 ```html
